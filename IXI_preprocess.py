@@ -13,6 +13,7 @@ from monai.transforms import (
 )
 import matplotlib.pyplot as plt
 import sys
+import os
 
 
 def preprocess(input_path, save_path):
