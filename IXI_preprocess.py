@@ -12,6 +12,7 @@ from monai.transforms import (
     ResizeWithPadOrCrop
 )
 import matplotlib.pyplot as plt
+import sys
 
 
 def preprocess(input_path, save_path):
