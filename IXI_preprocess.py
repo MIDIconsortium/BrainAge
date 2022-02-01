@@ -59,6 +59,7 @@ def preprocess(input_path, save_path):
 
 if __name__ == "__main__":
     input_path, save_path = sys.argv[1:]
+    print(input_path, save_path)
     for root, dirs, files in os.walk(input_path):
         for f in files:
             nii_path = os.path.join(root, f)
