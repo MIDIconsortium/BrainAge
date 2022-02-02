@@ -86,8 +86,8 @@ def evaluate(net, data_loader, eval_criterion):
                 pred_ages.append(pred.item())
                 true_ages.append(true.item())
 
-                ID2pred[acc] = pred.item()
-                ID2age[acc] = true.item()
+                ID2pred[ID] = pred.item()
+                ID2age[ID] = true.item()
 
                     
             
