@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument('--csv_path', type=str, required=True)
     parser.add_argument('--processed_nii_dir', type=str, default='./IXI_nii')
     args = parser.parse_args()
-    input_path, excel_path, nii_path = args.nii_dir, args.csv_path, args.processed_nii_dir
+    input_path, excel_path, nii_path = args.input_nii_dir, args.csv_path, args.processed_nii_dir
     save_dir = './IXI_nii/'
     os.mkdir(save_dir)
     for root, dirs, files in os.walk(input_path):
