@@ -14,6 +14,7 @@ from monai.transforms import (
 import matplotlib.pyplot as plt
 import sys
 import os
+import re
 
 
 def preprocess(input_path, save_path):
