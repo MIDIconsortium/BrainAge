@@ -109,7 +109,9 @@ if __name__ == "__main__":
     eval_criterion = nn.L1Loss(reduction='sum')
     loader = get_IXI_test_loader(os.path.join(os.getcwd(),'IXI_test_dataset.csv'))
 
-    loss, corr, true_ages, pred_ages, acc2pred, acc2truth = evaluate(net, loader, eval_criterion)
+    loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate(net, loader, eval_criterion)
+    
+    pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
 
     fig = plt.figure(figsize=(8,8))
     ax = fig.add_subplot(111)
@@ -120,7 +122,7 @@ if __name__ == "__main__":
     ax.set_xlabel('Chronological age')
     ax.set_ylabel('Predicted age')
     ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
-    fig.savefig(os.path.join(os.getcwd(),'WOOD_IXI.png'), facecolor='w')
+    fig.savefig(os.path.join(os.getcwd(),'IXI_scatter.png'), facecolor='w')
     
     
     
