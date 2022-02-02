@@ -22,9 +22,9 @@ Brain-age prediction can then be performed using the following command:
 
 Once complete, a .csv file with predicted ages for each IXI participant will be saved locally, along with the following scatter plot:
 
-[image](https://user-images.githubusercontent.com/67752614/152116303-b21dfbc9-430e-472e-b042-0f81dc64a137.png)
 
 
+![IXI_scatter](https://user-images.githubusercontent.com/67752614/152116497-c017631c-4a8b-4826-8825-2d79699cd954.png)
 
 
 
