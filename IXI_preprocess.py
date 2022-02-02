@@ -17,7 +17,7 @@ import os
 import re
 
 
-def preprocess(input_path):
+def preprocess(input_path, save_path):
     border = 5
     min_dim = 130
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
