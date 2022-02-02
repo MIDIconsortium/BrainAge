@@ -4,9 +4,17 @@ This repository contains scripts to enable readers to run the trained models pre
 
 ![image](https://user-images.githubusercontent.com/67752614/152115266-02e2c8ff-2994-4115-a0bf-75d6cf576f7f.png)
 
+The code requires the data to be in Nifti file format and makes heavy use of the [Project Monai library](https://monai.io/). This repository is compatible with python 3.6. See requirements.txt for all prerequisites; you can also install them using the following command:
+
+`pip install -r requirements.txt`
+
 # Usage
 
-To reproduce the results on the open access IXI dataset, first download the axial T2-weighted scans and associated .csv file from [here](https://brain-development.org/ixi-dataset/)
+To reproduce the results on the open access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). To be compatible for use with our models, these scans must be proprocessed (resampled to 1mm^3 isotropic, cropped/padded etc.). This can be done using the following command:
+
+`python IXI_preprocess.py IXI_dir path_to_IXI_csv`
+
+
 
 
 
