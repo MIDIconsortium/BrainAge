@@ -11,7 +11,7 @@ The code requires the data to be in Nifti file format and makes heavy use of the
 `pip install -r requirements.txt`
 
 # Usage
-## Running models with Information eXtraction from Images (IXI) dataset
+### Running models with Information eXtraction from Images (IXI) dataset
 To reproduce the results on the open-access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). To be compatible for use with our models, these scans must first be proprocessed (resampled to 1mm^3 isotropic, cropped/padded etc.). This can be done using the following command:
 
 `python IXI_preprocess.py IXI_directory path_to_IXI_csv`
