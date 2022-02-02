@@ -11,7 +11,7 @@ The code requires the data to be in Nifti file format and makes heavy use of the
 `pip install -r requirements.txt`
 
 # Usage
-
+## Running models with Information eXtraction from Images (IXI) dataset
 To reproduce the results on the open-access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). To be compatible for use with our models, these scans must first be proprocessed (resampled to 1mm^3 isotropic, cropped/padded etc.). This can be done using the following command:
 
 `python IXI_preprocess.py IXI_directory path_to_IXI_csv`
@@ -25,6 +25,8 @@ IXI_preprocess.py will create a local directory ('IXI_nii' in the 'BrainAge' fol
 This will save a .csv file with brain-predicted ages for each IXI participant, along with the following scatter plot:
 
 ![IXI_scatter](https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png)
+
+### Running models with external datasets
 
 To run our brain-age models with other datasets, first pre-process the scans by running the following command:
 
@@ -56,7 +58,7 @@ In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds p
 
 We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
 
-
+# Citation
 If you found this repository useful, please consider citing our work:
 
 ```@article{wood2022accurate,
