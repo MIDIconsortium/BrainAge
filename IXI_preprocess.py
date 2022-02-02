@@ -17,7 +17,7 @@ import os
 import re
 
 
-def preprocess(input_path, save_path):
+def preprocess(input_path):
     border = 5
     min_dim = 130
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
@@ -59,11 +59,11 @@ def preprocess(input_path, save_path):
         nib.save(new_image, os.path.join(save_path,str(int(ID[3:]))))
 
 if __name__ == "__main__":
-    input_path, save_path = sys.argv[1:]
-    print(input_path, save_path)
+    input_path sys.argv[1:]
     for root, dirs, files in os.walk(input_path):
         for f in files:
             nii_path = os.path.join(root, f)
+            save_path = os.path.join(os.getcwd(),'IXI_nii')
             preprocess(nii_path, save_path)
 
 
