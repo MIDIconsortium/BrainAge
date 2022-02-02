@@ -18,9 +18,9 @@ To reproduce the results on the open-access IXI dataset, first download (and unz
 
 Here, '/path/to/IXI/files' is the absolute path to the directory where the IXI scans in Nifti format have been unzipped to (this should contain files such as 'IXI497-Guys-1002-T2.nii.gz' etc), whereas '/path/to/IXI/csv/file' is the location of the saved IXI csv file e.g., /home/user/Downloads/IXI.xls' etc.
 
-IXI_preprocess.py will create a local directory with pre-processed scans (by default, this is './IXI_nii', although this can be specified by passing an additional '--processed_nii_dir' argument) . Brain-age prediction can then be performed using the following command:
+IXI_preprocess.py will create a local directory with pre-processed scans (by default, this is './IXI_nii', although this can be specified by passing an additional '--processed_nii_dir' argument). It will also generate a csv file containing the locations of the preprocessed files which the models need to run ('./brain_age_eval.csv'). Brain-age prediction can then be performed using the following command:
 
-`python run_IXI.py`
+`python run_IXI.py --csv_path ./brain_age_eval.csv`
 
 This will save a .csv file with brain-predicted ages for each IXI participant, along with the following scatter plot:
 
