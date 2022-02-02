@@ -36,9 +36,7 @@ This csv file should have the following columns:
 
 - 'file_name' which gives the absolute path to the Nifti file for each participant.
 
-Again, this will create a local directory ('nifti_preprocessed') of pre-processed scans.
-
-Brain age prediction can then be performed using the following command:
+Again, this will create a local directory of pre-processed scans. Brain age prediction can then be performed using the following command:
 
 `python run.py`
 
