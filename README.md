@@ -54,4 +54,4 @@ In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds p
 
 # Coming soon
 
-We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed.
+We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
