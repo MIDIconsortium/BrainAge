@@ -107,7 +107,7 @@ if __name__ == "__main__":
     net = net.to(device)
     net.load_state_dict(torch.load(os.path.join(os.getcwd(),'train_test_pool_single_GPU.pt')))
     eval_criterion = nn.L1Loss(reduction='sum')
-    loader = get_IXI_test_loader(os.path.join(os.getcwd(),'ixi_test_dataset.csv'))
+    loader = get_IXI_test_loader(os.path.join(os.getcwd(),'IXI_test_dataset.csv'))
 
     loss, corr, true_ages, pred_ages, acc2pred, acc2truth = evaluate(net, loader, eval_criterion)
 
