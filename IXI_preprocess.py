@@ -58,11 +58,11 @@ def preprocess(input_path, save_path):
 
         new_image = nib.Nifti1Image(resized, affine=np.eye(4))
 
-        nib.save(new_image, os.path.join(save_path,str(int(ID[3:]))))
+        nib.save(new_image, save_path)
 
 if __name__ == "__main__":
     input_path, excel_path = sys.argv[1:]
-    save_path = os.path.join(os.getcwd(),'IXI_nii/')
+    save_dir = os.path.join(os.getcwd(),'IXI_nii/')
     os.mkdir(save_dir)
     for root, dirs, files in os.walk(input_path):
         for f in files:
