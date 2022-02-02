@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     paths = []
     ages = []
-    nii_path = os.path.join(os.getcwd(),'IXI_NII')
+    nii_path = os.path.join(os.getcwd(),'IXI_nii')
     for f in os.listdir(nii_path):
         ID = f[:-3]
         row = df[df['IXI_ID'].astype(int)==int(ID)]
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         paths.append(os.path.join(nii_path, f))
         ages.append(age)
 
-    pd.DataFrame({'file_name':paths,'Age':ages}).to_csv(os.path.join(os.getcwd(),'IXI.csv'), index=False)
+    pd.DataFrame({'file_name':paths,'Age':ages}).to_csv(os.path.join(os.getcwd(),'IXI_test_dataset.csv'), index=False)
 
 
 
