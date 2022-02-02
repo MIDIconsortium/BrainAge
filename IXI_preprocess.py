@@ -68,8 +68,8 @@ if __name__ == "__main__":
             nii_path = os.path.join(root, f)
             preprocess(nii_path, save_path)
             count +=1
-        if count > 20:
-            break
+            if count > 20:
+                break
     df = pd.read_excel(excel_path)
     df = df[~df['AGE'].isnull()].reset_index(drop=True)
     df = df.drop_duplicates(subset='IXI_ID', keep=False).reset_index(drop=True)
