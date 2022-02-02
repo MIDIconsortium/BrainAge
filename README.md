@@ -55,3 +55,15 @@ In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds p
 # Coming soon
 
 We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
+
+
+If you found this repository useful, please consider citing our work:
+
+`@article{wood2022accurate,
+  title={Accurate brain-age models for routine clinical MRI examinations},
+  author={Wood, David A and Kafiabadi, Sina and Al Busaidi, Ayisha and Guilhem, Emily and Montvila, Antanas and Lynch, Jeremy and Townend, Matthew and Agarwal, Siddharth and Mazumder, Asif and Barker, Gareth J and others},
+  journal={NeuroImage},
+  pages={118871},
+  year={2022},
+  publisher={Elsevier}
+}`
