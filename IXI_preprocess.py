@@ -60,10 +60,12 @@ def preprocess(input_path, save_path):
 
 if __name__ == "__main__":
     input_path, excel_path = sys.argv[1:]
+    save_path = os.path.join(os.getcwd(),'IXI_nii')
+    os.mkdir(save_path)
     for root, dirs, files in os.walk(input_path):
         for f in files:
             nii_path = os.path.join(root, f)
-            save_path = os.path.join(os.getcwd(),'IXI_nii')
+            
             preprocess(nii_path, save_path)
             
     df = pd.read_excel(excel_path)
