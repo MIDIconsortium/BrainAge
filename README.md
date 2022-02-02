@@ -4,6 +4,8 @@ This repository contains scripts to enable readers to run the trained models pre
 
 ![image](https://user-images.githubusercontent.com/67752614/152115266-02e2c8ff-2994-4115-a0bf-75d6cf576f7f.png)
 
+# Requirements
+
 The code requires the data to be in Nifti file format and makes heavy use of the [Project Monai library](https://monai.io/). This repository is compatible with python 3.6. See requirements.txt for all prerequisites; you can also install them using the following command:
 
 `pip install -r requirements.txt`
