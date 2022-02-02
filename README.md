@@ -46,7 +46,7 @@ The 'preprocess.py' script will create a local directory of pre-processed scans.
 
 Again, this will save a .csv file with brain-predicted ages for each participant.If MAE and scatterplots are required, then use the following command:
 
-`python run.py --do_scatter`
+`python run.py --return_metrics`
 
 By default, our models will run on CPU. In this case, inference time is 5 minutes for the IXI dataset (~0.5 seconds per scan). If a GPU is available, use the following command:
 
@@ -56,7 +56,7 @@ In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds p
 
 # Coming soon
 
-We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
+We will be releasing our 'skull-stripped' model which takes as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
 
 # Citation
 If you found this repository useful, please consider citing our work:
