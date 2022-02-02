@@ -76,18 +76,18 @@ def evaluate(net, data_loader, eval_criterion):
     with torch.no_grad():
         net.eval()
         for k, data in enumerate(data_loader):
-            t2, age, accs = data
+            t2, age, IDs = data
             t2 = t2.to(device=device, dtype = torch.float)
             age = age.to(device=device, dtype=torch.float)
             age = age.reshape(-1,1)
 
             pred_age = net(t2)
-            for pred, true, acc in zip(pred_age, age, accs):
+            for pred, true, ID in zip(pred_age, age, IDs):
                 pred_ages.append(pred.item())
                 true_ages.append(true.item())
 
-                acc2pred[acc] = pred.item()
-                acc2age[acc] = true.item()
+                ID2pred[acc] = pred.item()
+                ID2age[acc] = true.item()
 
                     
             
