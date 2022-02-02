@@ -39,12 +39,9 @@ class IXI_dataset(Dataset):
         return tensor, age, ID
     
 def get_IXI_test_loader(csv_file,
-                           batch_size=4,
-                        flip=False):
-    if flip:
-        test_transforms = Compose([LoadNifti(image_only=True), RandFlip(prob=0.5, spatial_axis=0), ToTensor()])
-    else:
-        test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
+                        batch_size=4):
+
+    test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
    
 
     test_dataset = IXI_dataset(csv_file, transform=test_transforms)
@@ -54,7 +51,7 @@ def get_IXI_test_loader(csv_file,
     return test_loader
 
 def get_IXI_test_loader(csv_file,
-                           batch_size=4,
+                        batch_size=4,
                         flip=False):
 
     test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
