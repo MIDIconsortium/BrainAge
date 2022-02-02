@@ -28,21 +28,22 @@ To run our brain-age models with other datasets, first pre-process the scans by 
 
 `python preprocess.py path_to_csv`
 
-This csv file should have the following columns:
+This csv file should have the following two columns:
 
-- 'ID' which is a unique identifier for each participant/scanning session e.g., 'pat119' etc. (string)
-
-- 'Age' which gives the chronological age of each participant in years (int/float)
+- 'ID' which is a unique identifier for each participant/scanning session e.g., 'pat119' etc. (string).
 
 - 'file_name' which gives the absolute path to the Nifti file for each participant (string).
 
-Again, this will create a local directory of pre-processed scans. Brain age prediction can then be performed using the following command:
+Optionally, users can also provide a third 'Age' column (which gives the chronological age of each participant in years) in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots.
+
+The 'preprocess.py' script will create a local directory of pre-processed scans. Brain age prediction can then be performed using the following command:
 
 `python run.py`
 
-Again, this will save a .csv file with brain-predicted ages for each participant, along with a scatter plot.
+Again, this will save a .csv file with brain-predicted ages for each participant.If MAE and scatterplots are required, then use the following command:
 
+`python run.py --do_scatter`
 
 # Coming soon
 
-We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans with non-brain-tissue removed.
+We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed.
