@@ -86,8 +86,8 @@ def evaluate(net, data_loader, eval_criterion):
                 pred_ages.append(pred.item())
                 true_ages.append(true.item())
 
-                ID2pred[ID] = pred.item()
-                ID2age[ID] = true.item()
+                ID2pred[ID] = np.round(pred.item(), 1)
+                ID2age[ID] = np.round(true.item(), 1)
 
                     
             
@@ -121,6 +121,9 @@ if __name__ == "__main__":
     ax.set_ylabel('Predicted age')
     ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
     fig.savefig(os.path.join(os.getcwd(),'WOOD_IXI.png'), facecolor='w')
+    
+    
+    
 
 
 
