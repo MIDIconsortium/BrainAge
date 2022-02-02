@@ -102,9 +102,9 @@ if __name__ == "__main__":
     net = DenseNet(3,1,1)
     device = torch.device('cuda:0')
     net = net.to(device)
-    net.load_state_dict(torch.load(os.path.join(os.getcwd(),'train_test_pool_single_GPU.pt')))
+    net.load_state_dict(torch.load('./raw_T2.pt'))
     eval_criterion = nn.L1Loss(reduction='sum')
-    loader = get_IXI_test_loader(os.path.join(os.getcwd(),'IXI_test_dataset.csv'))
+    loader = get_IXI_test_loader('./IXI_test_dataset.csv')
 
     loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate(net, loader, eval_criterion)
     
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     ax.set_xlabel('Chronological age')
     ax.set_ylabel('Predicted age')
     ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
-    fig.savefig(os.path.join(os.getcwd(),'IXI_scatter.png'), facecolor='w')
+    fig.savefig('./IXI_scatter.png', facecolor='w')
     
     
     
