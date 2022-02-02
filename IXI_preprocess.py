@@ -12,10 +12,10 @@ from monai.transforms import (
     ResizeWithPadOrCrop
 )
 import matplotlib.pyplot as plt
-import sys
 import os
 import re
 import pandas as pd
+import argparse
 
 
 def preprocess(input_path, save_path):
@@ -61,8 +61,15 @@ def preprocess(input_path, save_path):
         nib.save(new_image, save_path)
 
 if __name__ == "__main__":
-    input_path, excel_path = sys.argv[1:]
-    save_dir = os.path.join(os.getcwd(),'IXI_nii/')
+    
+    parser = argparse.ArgumentParser()
+    # Add an argument
+    parser.add_argument('--input_nii_dir', type=str, required=True)
+    parser.add_argument('--csv_path', type=str, required=True)
+    parser.add_argument('--processed_nii_dir', type=str, default='./IXI_nii')
+    args = parser.parse_args()
+    input_path, excel_path, nii_path = args.nii_dir, args.csv_path, args.processed_nii_dir
+    save_dir = './IXI_nii/'
     os.mkdir(save_dir)
     for root, dirs, files in os.walk(input_path):
         for f in files:
@@ -76,7 +83,6 @@ if __name__ == "__main__":
 
     paths = []
     ages = []
-    nii_path = os.path.join(os.getcwd(),'IXI_nii')
     for f in os.listdir(nii_path):
         ID = int(re.search('[0-9]{3}',f).group(0))
         if ID not in IDs:
