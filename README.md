@@ -45,4 +45,6 @@ Brain age prediction can then be performed using the following command:
 Again, this will save a .csv file with brain-predicted ages for each participant, along with a scatter plot.
 
 
+# Coming soon
 
+We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans with non-brain-tissue removed.
