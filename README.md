@@ -30,11 +30,11 @@ To run our brain-age models with other datasets, first pre-process the scans by 
 
 This csv file should have the following columns:
 
-    1) 'ID' which is a unique string identifier for each participant/scanning session (e.g., 'pat119' etc.)
+- 'ID' which is a unique string identifier for each participant/scanning session (e.g., 'pat119' etc.)
 
-    2) 'Age' which gives the chronological age of each participant in years
+- 'Age' which gives the chronological age of each participant in years
 
-    3) 'file_name' which gives the absolute path to the Nifti file for each participant.
+- 'file_name' which gives the absolute path to the Nifti file for each participant.
 
 Again, this will create a local directory ('nifti_preprocessed') of pre-processed scans.
 
