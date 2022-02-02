@@ -18,7 +18,7 @@ To reproduce the results on the open-access IXI dataset, first download (and unz
 
 Here, '/path/to/IXI/files' is the absolute path to the directory where the IXI scans in Nifti format have been unzipped to (this should contain files such as 'IXI497-Guys-1002-T2.nii.gz' etc), whereas '/path/to/IXI/csv/file' is the location of the saved IXI csv file e.g., /home/user/Downloads/IXI.xls' etc.
 
-IXI_preprocess.py will create a local directory with pre-processed scans (by default, this is './IXI_nii', although this can be specified by passing an additional --processed_nii_dir argument) . Brain-age prediction can then be performed using the following command:
+IXI_preprocess.py will create a local directory with pre-processed scans (by default, this is './IXI_nii', although this can be specified by passing an additional '--processed_nii_dir' argument) . Brain-age prediction can then be performed using the following command:
 
 `python run_IXI.py`
 
@@ -30,7 +30,7 @@ This will save a .csv file with brain-predicted ages for each IXI participant, a
 
 To run our brain-age models with other datasets, first pre-process the scans by running the following command:
 
-`python preprocess.py path_to_csv`
+`python preprocess.py --csv_path /path/to/csv/file`
 
 This csv file should have the following two columns:
 
@@ -40,11 +40,11 @@ This csv file should have the following two columns:
 
 Optionally, users can also provide a third 'Age' column (which gives the chronological age of each participant in years) in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots.
 
-The 'preprocess.py' script will create a local directory of pre-processed scans. Brain age prediction can then be performed using the following command:
+The 'preprocess.py' script will create a local directory of pre-processed scans (by default, this is './processed_nii', but can be specified by using the '--processed_nii_dir' argument with process.py). Brain age prediction can then be performed using the following command:
 
 `python run.py`
 
-Again, this will save a .csv file with brain-predicted ages for each participant.If MAE metrics and scatterplots are required, then use the following command:
+Again, this will save a .csv file with brain-predicted ages for each participant.If MAE metrics and scatterplots are required, then use the following command (the csv file must have an 'Age' column for this to work):
 
 `python run.py --return_metrics`
 
