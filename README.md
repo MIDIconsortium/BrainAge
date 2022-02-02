@@ -40,7 +40,7 @@ This csv file should have the following two columns:
 
 Optionally, users can also provide a third 'Age' column (which gives the chronological age of each participant in years) in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots.
 
-The 'preprocess.py' script will create a local directory of pre-processed scans (by default, this is './processed_nii', but can be specified by using the '--processed_nii_dir' argument with process.py). Brain age prediction can then be performed using the following command:
+The 'preprocess.py' script will create a local directory of pre-processed scans (by default, this is './processed_nii', but can be specified by using the '--processed_nii_dir' argument with process.py).  Brain age prediction can then be performed using the following command:
 
 `python run.py`
 
