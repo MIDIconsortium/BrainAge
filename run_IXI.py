@@ -18,6 +18,40 @@ from monai.transforms import (
     ToTensor,
 )
 
+class IXI_dataset(Dataset):
+    """t1 IoPPN dataset"""
+
+    def __init__(self, csv_file, transform = None):
+        self.file_frame = pd.read_csv(csv_file)
+        self.transform = transform
+        
+    def __len__(self):
+        return len(self.file_frame)
+
+    def __getitem__(self, idx):
+        stack_name = self.file_frame.iloc[idx]['file_name']
+        tensor = self.transform(stack_name)  
+        tensor = (tensor - tensor.mean())/tensor.std()
+        tensor = torch.clamp(tensor,-3.5,3.5)
+        age = self.file_frame.iloc[idx]['Age']  
+        ID = re.search('IXI[0-9]{1,}',stack_name).group(0)
+        return tensor, age, ID
+    
+def get_IXI_test_loader(csv_file,
+                           batch_size=4,
+                        flip=False):
+    if flip:
+        test_transforms = Compose([LoadNifti(image_only=True), RandFlip(prob=0.5, spatial_axis=0), ToTensor()])
+    else:
+        test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
+   
+
+    test_dataset = IXI_dataset(csv_file, transform=test_transforms)
+    
+
+    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    return test_loader
+
 def get_IXI_test_loader(csv_file,
                            batch_size=4,
                         flip=False):
