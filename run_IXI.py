@@ -63,7 +63,7 @@ def get_IXI_test_loader(csv_file,
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
     return test_loader
 
-def evaluate(net, data_loader, eval_criterion):
+def evaluate_with_age(net, data_loader, eval_criterion, device):
     val_running_loss = 0
     valid_count = 0 
     true_ages = []
@@ -97,29 +97,57 @@ def evaluate(net, data_loader, eval_criterion):
         corr = corr_mat[0,1]
 
         return val_loss, corr, true_ages, pred_ages, ID2pred, ID2age
+    
+def evaluate_without_age(net, data_loader, device):
+    ID2pred = {}
+    with torch.no_grad():
+        net.eval()
+        for k, data in enumerate(data_loader):
+            t2,  IDs = data
+            t2 = t2.to(device=device, dtype = torch.float)
+
+            pred_age = net(t2)
+            for pred, ID in zip(pred_age, IDs):
+                ID2pred[ID] = np.round(pred.item(), 1)
+
+        return ID2pred
 
 if __name__ == "__main__":
     net = DenseNet(3,1,1)
-    device = torch.device('cuda:0')
-    net = net.to(device)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--gpu', dest='gpu', action='store_true')
+    parser.set_defaults(gpu=False)
+    parser.add_argument('--return_metrics', dest='return_metrics', action='store_true')
+    parser.set_defaults(return_metrics=False)
+    args = parser.parse_args()
+    if args.gpu:
+        device = torch.device('cuda:0')
+    else:
+        device = torch.device('cpu')
     net.load_state_dict(torch.load('./raw_T2.pt'))
+    net = net.to(device)
     eval_criterion = nn.L1Loss(reduction='sum')
     loader = get_IXI_test_loader('./IXI_test_dataset.csv')
-
-    loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate(net, loader, eval_criterion)
+    if args.return_metrics:
+        loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate_with_age(net, loader, eval_criterion, device)
+        pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
+        fig = plt.figure(figsize=(8,8))
+        ax = fig.add_subplot(111)
+        ax.scatter(true_ages, pred_ages, alpha=0.3)
+        ax.plot(true_ages, true_ages,linestyle= '--', color='black')
+        ax.set_ylim([min(true_ages), max(true_ages)])
+        ax.set_aspect('equal')
+        ax.set_xlabel('Chronological age')
+        ax.set_ylabel('Predicted age')
+        ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
+        fig.savefig('./IXI_scatter.png', facecolor='w')
+    else:
+        ID2pred = evaluate_without_age(net, loader, device)
+        pd.DataFrame(ID2pred, index=['Predicted age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
     
-    pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
 
-    fig = plt.figure(figsize=(8,8))
-    ax = fig.add_subplot(111)
-    ax.scatter(true_ages, pred_ages, alpha=0.3)
-    ax.plot(true_ages, true_ages,linestyle= '--', color='black')
-    ax.set_ylim([min(true_ages), max(true_ages)])
-    ax.set_aspect('equal')
-    ax.set_xlabel('Chronological age')
-    ax.set_ylabel('Predicted age')
-    ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
-    fig.savefig('./IXI_scatter.png', facecolor='w')
+
+   
     
     
     
