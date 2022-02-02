@@ -35,7 +35,7 @@ class IXI_dataset(Dataset):
         tensor = (tensor - tensor.mean())/tensor.std()
         tensor = torch.clamp(tensor,-3.5,3.5)
         age = self.file_frame.iloc[idx]['Age']  
-        ID = re.search('IXI[0-9]{1,}',stack_name).group(0)
+        ID = re.search('[0-9]{1,}.nii', stack_name).group(0)[:-4]
         return tensor, age, ID
     
 def get_IXI_test_loader(csv_file,
