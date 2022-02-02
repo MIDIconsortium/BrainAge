@@ -26,6 +26,7 @@ def preprocess(input_path, save_path):
     ID = re.search('IXI[0-9]{3}',input_path).group(0)
     arr, _ = LoadNifti()(input_path)
     arr = AddChannel()(arr)
+    arr = arr[:,:,::-1,:].copy()
     arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,_['affine'])[0]
 
     if arr_resampled.shape[-1] > min_dim and arr_resampled.shape[-2] > min_dim and arr_resampled.shape[-3] > min_dim:
