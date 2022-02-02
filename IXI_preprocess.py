@@ -63,11 +63,11 @@ def preprocess(input_path, save_path):
 if __name__ == "__main__":
     input_path, excel_path = sys.argv[1:]
     save_dir = os.path.join(os.getcwd(),'IXI_nii/')
-    os.mkdir(save_dir)
-    for root, dirs, files in os.walk(input_path):
-        for f in files:
-            nii_path = os.path.join(root, f)
-            preprocess(nii_path, save_dir + f[:-3])
+    #os.mkdir(save_dir)
+    #for root, dirs, files in os.walk(input_path):
+    #    for f in files:
+    #        nii_path = os.path.join(root, f)
+    #        preprocess(nii_path, save_dir + f[:-3])
     df = pd.read_excel(excel_path)
     df = df[~df['AGE'].isnull()].reset_index(drop=True)
     df = df.drop_duplicates(subset='IXI_ID', keep=False).reset_index(drop=True)
