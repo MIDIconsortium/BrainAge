@@ -78,7 +78,7 @@ if __name__ == "__main__":
     ages = []
     nii_path = os.path.join(os.getcwd(),'IXI_nii')
     for f in os.listdir(nii_path):
-        ID = int(f[:-4])
+        ID = int(re.search('[0-9]{3}',f).group(0))
         if ID not in IDs:
             continue
         row = df[df['IXI_ID'].astype(int)==ID]
