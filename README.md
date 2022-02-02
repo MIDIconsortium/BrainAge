@@ -44,6 +44,12 @@ Again, this will save a .csv file with brain-predicted ages for each participant
 
 `python run.py --do_scatter`
 
+By default, our models will run on CPU. IN this case, inference time is ~ seconds per scan. If a GPU is available, use the following command:
+
+`python run.py --gpu`
+
+In this case, inferences time is ~ seconds per scan.
+
 # Coming soon
 
 We will be releasing our 'skull-stripped' model which takses as input axial T2-weighted scans which have had non-brain-tissue removed.
