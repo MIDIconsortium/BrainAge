@@ -82,7 +82,7 @@ if __name__ == "__main__":
         if ID not in IDs:
             continue
         row = df[df['IXI_ID'].astype(int)==ID]
-        age = int(row['AGE'])
+        age = np.round(row['AGE'].values[0], 1)
         paths.append(os.path.join(nii_path, f))
         ages.append(age)
 
