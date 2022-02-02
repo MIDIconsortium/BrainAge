@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 import re
+import pandas as pd
 
 
 def preprocess(input_path, save_path):
@@ -68,7 +69,7 @@ if __name__ == "__main__":
             nii_path = os.path.join(root, f)
             preprocess(nii_path, save_path)
             count +=1
-            if count > 20:
+            if count > 10:
                 break
     df = pd.read_excel(excel_path)
     df = df[~df['AGE'].isnull()].reset_index(drop=True)
