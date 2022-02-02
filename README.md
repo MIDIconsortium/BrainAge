@@ -46,11 +46,11 @@ Again, this will save a .csv file with brain-predicted ages for each participant
 
 `python run.py --do_scatter`
 
-By default, our models will run on CPU. IN this case, inference time is ~ seconds per scan. If a GPU is available, use the following command:
+By default, our models will run on CPU. IN this case, inference time is 5 minutes for the IXI dataset (~ 0.5 seconds per scan). If a GPU is available, use the following command:
 
 `python run.py --gpu`
 
-In this case, inferences time is ~ seconds per scan.
+In this case, inferences time is 20 seconds for the IXI dataset (~ 0.03 seconds per scanper scan).
 
 # Coming soon
 
