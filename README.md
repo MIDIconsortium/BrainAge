@@ -66,7 +66,8 @@ ax1.imshow(scan.squeeze()[:,:,int(scan.shape[-1]/5)], cmap='gray')
 ax2.imshow(scan.squeeze()[:,:,int(2*scan.shape[-1]/5)], cmap='gray')
 ax3.imshow(scan.squeeze()[:,:,int(3*scan.shape[-1]/5)], cmap='gray')
 ax4.imshow(scan.squeeze()[:,:,int(4*scan.shape[-1]/5)], cmap='gray')
-fig.show()```
+fig.show()
+```
 
 
 
