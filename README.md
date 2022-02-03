@@ -57,14 +57,7 @@ In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds p
 PLease note that our model only provides meaningful brian-age predictions for scans that are oriented in a particular manner (first dimension = right to left, second dimension = anterior to posterior, third dimension = inferior to superior). To check compatibility, please run the following code (requires numpy, nibabel, and matplotlib - see requirements.txt):
 
 ```python
-import os
-import subprocess
-
-if os.path.isfile('file.tar'):
-   subprocess.check_call(['tar', '-xvf', 'file.tar'])
-```
-
-`import numpy as np
+import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
 scan = np.asarray(nib.load('/path/to/nifti/file').dataobj)
@@ -73,10 +66,11 @@ ax1.imshow(scan.squeeze()[:,:,int(scan.shape[-1]/5)], cmap='gray')
 ax2.imshow(scan.squeeze()[:,:,int(2*scan.shape[-1]/5)], cmap='gray')
 ax3.imshow(scan.squeeze()[:,:,int(3*scan.shape[-1]/5)], cmap='gray')
 ax4.imshow(scan.squeeze()[:,:,int(4*scan.shape[-1]/5)], cmap='gray')
-fig.show()`
+fig.show()```
 
-Which for '' from the IXI database gives:
 
+
+![orientation](https://user-images.githubusercontent.com/67752614/152259324-7395c9a2-5bff-432b-a0a8-b02ee332fa20.png)
 
 
 
