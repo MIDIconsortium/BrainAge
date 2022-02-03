@@ -54,6 +54,24 @@ By default, our models will run on CPU. In this case, inference time is 5 minute
 
 In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds per scan).
 
+PLease note that our model only provides meaningful brian-age predictions for scans that are oriented in a particular manner (first dimension = right to left, second dimension = anterior to posterior, third dimension = inferior to superior). To check compatibility, please run the following code (requires numpy, nibabel, and matplotlib - see requirements.txt):
+
+`import numpy as np
+import nibabel as nib
+import matplotlib.pyplot as plt
+scan = np.asarray(nib.load('/path/to/nifti/file').dataobj)
+fig, (ax1, ax2, ax3, ax4) = plt.subplots(1,4, figsize=(15,15))
+ax1.imshow(scan.squeeze()[:,:,int(scan.shape[-1]/5)], cmap='gray')
+ax2.imshow(scan.squeeze()[:,:,int(2*scan.shape[-1]/5)], cmap='gray')
+ax3.imshow(scan.squeeze()[:,:,int(3*scan.shape[-1]/5)], cmap='gray')
+ax4.imshow(scan.squeeze()[:,:,int(4*scan.shape[-1]/5)], cmap='gray')
+fig.show()`
+
+Which for '' from the IXI database gives:
+
+
+
+
 # Coming soon
 
 We will be releasing our 'skull-stripped' model which takes as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
