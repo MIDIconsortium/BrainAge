@@ -54,7 +54,7 @@ By default, our models will run on CPU. In this case, inference time is 5 minute
 
 In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds per scan).
 
-PLease note that our model only provides meaningful brian-age predictions for scans that are oriented in a particular manner (first dimension = right to left, second dimension = anterior to posterior, third dimension = inferior to superior). To check compatibility, please run the following code (requires numpy, nibabel, and matplotlib - see requirements.txt):
+PLease note that our model only provides meaningful brian-age predictions for scans that are oriented in a particular manner (first dimension = right to left, second dimension = anterior to posterior, third dimension = inferior to superior). To check compatibility, please run the following code (requires numpy, nibabel, and matplotlib - see requirements.txt) prior to using our preprocessing and brain-age model scripts and ensure that the orientation of your scans matches that shown below:
 
 ```python
 import numpy as np
