@@ -56,6 +56,14 @@ In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds p
 
 PLease note that our model only provides meaningful brian-age predictions for scans that are oriented in a particular manner (first dimension = right to left, second dimension = anterior to posterior, third dimension = inferior to superior). To check compatibility, please run the following code (requires numpy, nibabel, and matplotlib - see requirements.txt):
 
+```python
+import os
+import subprocess
+
+if os.path.isfile('file.tar'):
+   subprocess.check_call(['tar', '-xvf', 'file.tar'])
+```
+
 `import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
