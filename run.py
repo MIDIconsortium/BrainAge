@@ -122,7 +122,7 @@ if __name__ == "__main__":
     net = net.to(device)
     eval_criterion = nn.L1Loss(reduction='sum')
     if args.return_metrics:
-        loader = get_IXI_test_loader(args.processed_csv_file, return_metrics=True)
+        loader = get_test_loader(args.processed_csv_file, return_metrics=True)
         loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate_with_age(net, loader, eval_criterion, device)
         pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./T2_brain_age_predictions.csv',index=False)
         fig = plt.figure(figsize=(8,8))
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
         fig.savefig('./T2_scatter.png', facecolor='w')
     else:
-        loader = get_IXI_test_loader(args.processed_csv_file)
+        loader = get_test_loader(args.processed_csv_file)
         ID2pred = evaluate_without_age(net, loader, device)
         pd.DataFrame(ID2pred, index=['Predicted age (years)']).T.to_csv('./T2_brain_age_predictions.csv',index=False)
     
