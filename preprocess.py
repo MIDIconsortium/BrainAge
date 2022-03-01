@@ -197,7 +197,7 @@ if __name__ == "__main__":
     parser.add_argument('--processed_nii_dir', type=str, default='./T2_processed_nii/')
     parser.add_argument('--processed_csv_path', type=str, default='./brain_age_evaluation_dataset.csv')
     args = parser.parse_args()
-    csv_path, eval_csv_path, save_dir = args.raw_csv_path, args. processed_csv_path, args.processed_nii_dir
+    csv_path, eval_csv_path, save_dir = args.raw_csv_path, args.processed_csv_path, args.processed_nii_dir
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     df = pd.read_csv(csv_path)
