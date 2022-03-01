@@ -119,8 +119,8 @@ if __name__ == "__main__":
     parser.add_argument('--gpu', dest='gpu', action='store_true')
     parser.add_argument('--csv_path', type=str, default='./IXI_test_dataset.csv')
     parser.set_defaults(gpu=False)
-    parser.add_argument('--return_metrics', dest='return_metrics', action='store_true')
-    parser.set_defaults(return_metrics=False)
+    #parser.add_argument('--return_metrics', dest='return_metrics', action='store_true')
+    #parser.set_defaults(return_metrics=False)
     args = parser.parse_args()
     csv_path = args.csv_path
     if args.gpu:
@@ -131,22 +131,22 @@ if __name__ == "__main__":
     net = net.to(device)
     eval_criterion = nn.L1Loss(reduction='sum')
     loader = get_IXI_test_loader(csv_path)
-    if args.return_metrics:
-        loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate_with_age(net, loader, eval_criterion, device)
-        pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
-        fig = plt.figure(figsize=(8,8))
-        ax = fig.add_subplot(111)
-        ax.scatter(true_ages, pred_ages, alpha=0.3)
-        ax.plot(true_ages, true_ages,linestyle= '--', color='black')
-        ax.set_ylim([min(true_ages), max(true_ages)])
-        ax.set_aspect('equal')
-        ax.set_xlabel('Chronological age')
-        ax.set_ylabel('Predicted age')
-        ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
-        fig.savefig('./IXI_scatter.png', facecolor='w')
-    else:
-        ID2pred = evaluate_without_age(net, loader, device)
-        pd.DataFrame(ID2pred, index=['Predicted age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
+    #if args.return_metrics:
+    loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate_with_age(net, loader, eval_criterion, device)
+    pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
+    fig = plt.figure(figsize=(8,8))
+    ax = fig.add_subplot(111)
+    ax.scatter(true_ages, pred_ages, alpha=0.3)
+    ax.plot(true_ages, true_ages,linestyle= '--', color='black')
+    ax.set_ylim([min(true_ages), max(true_ages)])
+    ax.set_aspect('equal')
+    ax.set_xlabel('Chronological age')
+    ax.set_ylabel('Predicted age')
+    ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
+    fig.savefig('./IXI_scatter.png', facecolor='w')
+    #else:
+        #ID2pred = evaluate_without_age(net, loader, device)
+        #pd.DataFrame(ID2pred, index=['Predicted age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
     
 
 
