@@ -92,7 +92,61 @@ def align_volume_to_ref(volume, aff, aff_ref=None, return_aff=False, n_dims=None
         return new_volume, aff_flo
     else:
         return new_volume
+def reorder_voxels(vox_array, affine, voxel_order):
+    '''Reorder the given voxel array and corresponding affine.
+    Parameters
+    ----------
+    vox_array : array
+        The array of voxel data
+    affine : array
+        The affine for mapping voxel indices to Nifti patient space
+    voxel_order : str
+        A three character code specifing the desired ending point for rows,
+        columns, and slices in terms of the orthogonal axes of patient space:
+        (l)eft, (r)ight, (a)nterior, (p)osterior, (s)uperior, and (i)nferior.
+    Returns
+    -------
+    out_vox : array
+        An updated view of vox_array.
+    out_aff : array
+        A new array with the updated affine
+    reorient_transform : array
+        The transform used to update the affine.
+    ornt_trans : tuple
+        The orientation transform used to update the orientation.
+    '''
+    #Check if voxel_order is valid
+    voxel_order = voxel_order.upper()
+    if len(voxel_order) != 3:
+        raise ValueError('The voxel_order must contain three characters')
+    dcm_axes = ['LR', 'AP', 'SI']
+    for char in voxel_order:
+        if not char in 'LRAPSI':
+            raise ValueError('The characters in voxel_order must be one '
+                             'of: L,R,A,P,I,S')
+        for idx, axis in enumerate(dcm_axes):
+            if char in axis:
+                del dcm_axes[idx]
+    if len(dcm_axes) != 0:
+        raise ValueError('No character in voxel_order corresponding to '
+                         'axes: %s' % dcm_axes)
 
+    #Check the vox_array and affine have correct shape/size
+    if len(vox_array.shape) < 3:
+        raise ValueError('The vox_array must be at least three dimensional')
+    if affine.shape != (4, 4):
+        raise ValueError('The affine must be 4x4')
+
+    #Pull the current index directions from the affine
+    orig_ornt = nib.io_orientation(affine)
+    new_ornt = nib.orientations.axcodes2ornt(voxel_order)
+    ornt_trans = nib.orientations.ornt_transform(orig_ornt, new_ornt)
+    orig_shape = vox_array.shape
+    vox_array = nib.apply_orientation(vox_array, ornt_trans)
+    aff_trans = nib.orientations.inv_ornt_aff(ornt_trans, orig_shape)
+    affine = np.dot(affine, aff_trans)
+
+    return (vox_array, affine, aff_trans, ornt_trans)
 
 def preprocess(input_path, save_path):
     border = 5
@@ -101,9 +155,9 @@ def preprocess(input_path, save_path):
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
     arr, _ = LoadNifti()(input_path)
     print(arr.shape)
-    arr = align_volume_to_ref(arr, _['affine'])
+    arr, affine, aff_trans, ornt_trans = reorder_voxels(arr, _['affine'], 'LPS')
     arr = AddChannel()(arr)
-    arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,_['affine'])[0]
+    arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr, affine)[0]
 
     if arr_resampled.shape[-1] > min_dim and arr_resampled.shape[-2] > min_dim and arr_resampled.shape[-3] > min_dim:
         mid_slice = arr_resampled.squeeze()[:,:,int(arr_resampled.shape[-1]/2)]
