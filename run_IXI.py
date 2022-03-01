@@ -117,12 +117,10 @@ if __name__ == "__main__":
     net = DenseNet(3,1,1)
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', dest='gpu', action='store_true')
-    parser.add_argument('--csv_path', type=str, default='./IXI_test_dataset.csv')
     parser.set_defaults(gpu=False)
     #parser.add_argument('--return_metrics', dest='return_metrics', action='store_true')
     #parser.set_defaults(return_metrics=False)
     args = parser.parse_args()
-    csv_path = args.csv_path
     if args.gpu:
         device = torch.device('cuda:0')
     else:
@@ -130,7 +128,7 @@ if __name__ == "__main__":
     net.load_state_dict(torch.load('./raw_T2.pt'))
     net = net.to(device)
     eval_criterion = nn.L1Loss(reduction='sum')
-    loader = get_IXI_test_loader(csv_path)
+    loader = get_IXI_test_loader('./IXI_test_dataset.csv')
     #if args.return_metrics:
     loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate_with_age(net, loader, eval_criterion, device)
     pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
