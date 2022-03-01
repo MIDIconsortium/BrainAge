@@ -140,7 +140,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # Add an argument
     parser.add_argument('--raw_csv_path', type=str, required=True)
-    parser.add_argument('--processed_nii_dir', type=str, default='./processed_nii/')
+    parser.add_argument('--processed_nii_dir', type=str, default='./T2_processed_nii/')
     parser.add_argument('--processed_csv_path', type=str, default='./brain_age_evaluation_dataset.csv')
     args = parser.parse_args()
     csv_path, eval_csv_path, save_dir = args.raw_csv_path, args. processed_csv_path, args.processed_nii_dir
