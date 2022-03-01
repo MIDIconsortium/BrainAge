@@ -1,9 +1,4 @@
-
 import numpy as np
-
-
-
-
 def get_dims(shape, max_channels=10):
     """Get the number of dimensions and channels from the shape of an array.
     The number of dimensions is assumed to be the length of the shape, as long as the shape of the last dimension is
