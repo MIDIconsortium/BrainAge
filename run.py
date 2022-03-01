@@ -19,13 +19,13 @@ from monai.transforms import (
     ToTensor,
 )
 
-class IXI_dataset(Dataset):
-    """t1 IoPPN dataset"""
+class T2_dataset(Dataset):
+    """External T2 dataset dataset"""
 
-    def __init__(self, csv_file, transform = None):
+    def __init__(self, csv_file, transform = None, return_metrics=False):
         self.file_frame = pd.read_csv(csv_file)
         self.transform = transform
-        
+        self.return_metrics = return_metrics
     def __len__(self):
         return len(self.file_frame)
 
@@ -34,34 +34,25 @@ class IXI_dataset(Dataset):
         tensor = self.transform(stack_name)  
         tensor = (tensor - tensor.mean())/tensor.std()
         tensor = torch.clamp(tensor,-3.5,3.5)
-        age = self.file_frame.iloc[idx]['Age']  
         ID = re.search('IXI[0-9]{1,}',stack_name).group(0)
-        return tensor, age, ID
+        if self.return_metrics:
+            age = self.file_frame.iloc[idx]['Age']  
+            return tensor, age, ID
+        else:
+            return tensor, ID
     
-def get_IXI_test_loader(csv_file,
+def get_test_loader(csv_file,
                         batch_size=4):
 
     test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
    
 
-    test_dataset = IXI_dataset(csv_file, transform=test_transforms)
+    test_dataset = T2_dataset(csv_file, transform=test_transforms, return_metrics=return_metrics)
     
 
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
     return test_loader
 
-def get_IXI_test_loader(csv_file,
-                        batch_size=4,
-                        flip=False):
-
-    test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
-   
-
-    test_dataset = IXI_dataset(csv_file, transform=test_transforms)
-    
-
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
-    return test_loader
 
 def evaluate_with_age(net, data_loader, eval_criterion, device):
     val_running_loss = 0
@@ -127,8 +118,8 @@ if __name__ == "__main__":
     net.load_state_dict(torch.load('./raw_T2.pt'))
     net = net.to(device)
     eval_criterion = nn.L1Loss(reduction='sum')
-    loader = get_IXI_test_loader('./IXI_test_dataset.csv')
     if args.return_metrics:
+        loader = get_IXI_test_loader('./IXI_test_dataset.csv', return_metrics=True)
         loss, corr, true_ages, pred_ages, ID2pred, ID2truth = evaluate_with_age(net, loader, eval_criterion, device)
         pd.DataFrame([ID2pred,ID2truth], index=['Predicted age (years)', 'True age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
         fig = plt.figure(figsize=(8,8))
@@ -142,6 +133,7 @@ if __name__ == "__main__":
         ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
         fig.savefig('./IXI_scatter.png', facecolor='w')
     else:
+        loader = get_IXI_test_loader('./IXI_test_dataset.csv')
         ID2pred = evaluate_without_age(net, loader, device)
         pd.DataFrame(ID2pred, index=['Predicted age (years)']).T.to_csv('./IXI_brain_age_predictions.csv',index=False)
     
