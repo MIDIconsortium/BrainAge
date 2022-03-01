@@ -148,9 +148,11 @@ if __name__ == "__main__":
     input_path, excel_path, processed_nii_path = args.input_nii_dir, args.csv_path, args.processed_nii_dir
     os.mkdir(processed_nii_path)
     for root, dirs, files in os.walk(input_path):
-        for f in files:
+        for f in files[:20]:
             nii_path = os.path.join(root, f)
             preprocess(nii_path, os.path.join(processed_nii_path, f[:-3]))
+
+            
     df = pd.read_excel(excel_path)
     df = df[~df['AGE'].isnull()].reset_index(drop=True)
     df = df.drop_duplicates(subset='IXI_ID', keep=False).reset_index(drop=True)
