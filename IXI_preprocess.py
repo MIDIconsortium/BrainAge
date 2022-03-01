@@ -150,7 +150,7 @@ if __name__ == "__main__":
     for root, dirs, files in os.walk(input_path):
         for f in files:
             nii_path = os.path.join(root, f)
-            preprocess(nii_path, processed_nii_path + f[:-3])
+            preprocess(nii_path, os.path.join(processed_nii_path, + f[:-3]))
     df = pd.read_excel(excel_path)
     df = df[~df['AGE'].isnull()].reset_index(drop=True)
     df = df.drop_duplicates(subset='IXI_ID', keep=False).reset_index(drop=True)
