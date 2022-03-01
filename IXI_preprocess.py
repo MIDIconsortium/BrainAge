@@ -145,13 +145,12 @@ if __name__ == "__main__":
     parser.add_argument('--csv_path', type=str, required=True)
     parser.add_argument('--processed_nii_dir', type=str, default='./IXI_nii')
     args = parser.parse_args()
-    input_path, excel_path, nii_path = args.input_nii_dir, args.csv_path, args.processed_nii_dir
-    save_dir = './IXI_nii/'
-    os.mkdir(save_dir)
+    input_path, excel_path, processed_nii_path = args.input_nii_dir, args.csv_path, args.processed_nii_dir
+    os.mkdir(processed_nii_path)
     for root, dirs, files in os.walk(input_path):
         for f in files:
             nii_path = os.path.join(root, f)
-            preprocess(nii_path, save_dir + f[:-3])
+            preprocess(nii_path, processed_nii_path + f[:-3])
     df = pd.read_excel(excel_path)
     df = df[~df['AGE'].isnull()].reset_index(drop=True)
     df = df.drop_duplicates(subset='IXI_ID', keep=False).reset_index(drop=True)
@@ -160,7 +159,7 @@ if __name__ == "__main__":
 
     paths = []
     ages = []
-    for f in os.listdir(nii_path):
+    for f in os.listdir(processed_nii_path):
         ID = int(re.search('[0-9]{3}',f).group(0))
         if ID not in IDs:
             continue
