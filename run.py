@@ -43,7 +43,8 @@ class T2_dataset(Dataset):
             return tensor, ID
     
 def get_test_loader(csv_file,
-                        batch_size=4):
+                        batch_size=4,
+                        return_metrics=False):
 
     test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
    
