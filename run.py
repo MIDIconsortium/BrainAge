@@ -31,7 +31,7 @@ class T2_dataset(Dataset):
         return len(self.file_frame)
 
     def __getitem__(self, idx):
-        stack_name = self.file_frame.iloc[idx]['file_name']
+        stack_name = self.file_frame.iloc[idx]['process_file_name']
         tensor = self.transform(stack_name)  
         tensor = (tensor - tensor.mean())/tensor.std()
         tensor = torch.clamp(tensor,-3.5,3.5)
