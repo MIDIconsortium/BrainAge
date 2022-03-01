@@ -154,7 +154,6 @@ def preprocess(input_path, save_path):
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
     arr, _ = LoadNifti()(input_path)
-    print(arr.shape)
     arr, affine, aff_trans, ornt_trans = reorder_voxels(arr, _['affine'], 'LPS')
     arr = AddChannel()(arr)
     arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr, affine)[0]
