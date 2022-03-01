@@ -94,7 +94,7 @@ def preprocess(input_path, save_path):
     arr = AddChannel()(arr)
     #arr = arr[:,:,::-1,:].copy()
     #arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,_['affine'])[0]
-    arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,aff_trans)[0]
+    arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,affine)[0]
 
     if arr_resampled.shape[-1] > min_dim and arr_resampled.shape[-2] > min_dim and arr_resampled.shape[-3] > min_dim:
         mid_slice = arr_resampled.squeeze()[:,:,int(arr_resampled.shape[-1]/2)]
