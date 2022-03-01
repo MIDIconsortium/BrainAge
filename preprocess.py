@@ -140,10 +140,11 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     # Add an argument
-    parser.add_argument('--csv_path', type=str, required=True)
+    parser.add_argument('--raw_csv_path', type=str, required=True)
     parser.add_argument('--processed_nii_dir', type=str, default='./processed_nii/')
+    parser.add_argument('--processed_csv_path', type=str, default='./brain_age_evaluation_dataset.csv')
     args = parser.parse_args()
-    csv_path, save_dir = args.csv_path, args.processed_nii_dir
+    csv_path, eval_csv_path, save_dir = args.csv_path, args. processed_csv_path, args.processed_nii_dir
     os.mkdir(save_dir)
     df = pd.read_csv(csv_path)
     df['processed_file_name'] = -1
@@ -153,7 +154,7 @@ if __name__ == "__main__":
         preprocess(nii_path, os.path.join(save_dir, ID + '.nii'))
         df.loc[i, 'processed_file_name'] = os.path.join(save_dir, ID + '.nii')
 
-    df.to_csv(os.path.join(os.getcwd(),'brain_age_testing_dataset.csv'), index=False)
+    df.to_csv(eval_csv_path, index=False)
 
 
 
