@@ -126,6 +126,8 @@ def preprocess(input_path, save_path):
         new_image = nib.Nifti1Image(resized, affine=np.eye(4))
 
         nib.save(new_image, save_path)
+    else:
+        print(input_path)
 
 if __name__ == "__main__":
     
