@@ -99,7 +99,6 @@ def preprocess(input_path, save_path):
     min_dim = 130
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
-    ID = re.search('IXI[0-9]{3}',input_path).group(0)
     arr, _ = LoadNifti()(input_path)
     arr = align_volume_to_ref(arr, _['affine'])
     arr = AddChannel()(arr)
