@@ -148,7 +148,7 @@ if __name__ == "__main__":
     input_path, excel_path, processed_nii_path = args.input_nii_dir, args.csv_path, args.processed_nii_dir
     os.mkdir(processed_nii_path)
     for root, dirs, files in os.walk(input_path):
-        for f in files[:20]:
+        for f in files:
             nii_path = os.path.join(root, f)
             preprocess(nii_path, os.path.join(processed_nii_path, f[:-3]))
 
