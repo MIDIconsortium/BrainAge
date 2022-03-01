@@ -35,7 +35,7 @@ class T2_dataset(Dataset):
         tensor = self.transform(stack_name)  
         tensor = (tensor - tensor.mean())/tensor.std()
         tensor = torch.clamp(tensor,-3.5,3.5)
-        ID = re.search('IXI[0-9]{1,}',stack_name).group(0)
+        ID = self.file_frame.iloc[idx]['ID']
         if self.return_metrics:
             age = self.file_frame.iloc[idx]['Age']  
             return tensor, age, ID
