@@ -62,7 +62,6 @@ def align_volume_to_ref(volume, aff, aff_ref=None, return_aff=False, n_dims=None
     # work on copy
     new_volume = volume.copy()
     aff_flo = aff.copy()
-    print(aff_flo)
 
     # default value for aff_ref
     if aff_ref is None:
