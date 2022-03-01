@@ -165,7 +165,7 @@ if __name__ == "__main__":
             continue
         row = df[df['IXI_ID'].astype(int)==ID]
         age = np.round(row['AGE'].values[0], 1)
-        paths.append(os.path.join(nii_path, f))
+        paths.append(os.path.join(processed_nii_path, f))
         ages.append(age)
 
     pd.DataFrame({'file_name':paths,'Age':ages}).to_csv(os.path.join(os.getcwd(),'IXI_test_dataset.csv'), index=False)
