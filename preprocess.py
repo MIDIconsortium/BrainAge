@@ -188,6 +188,11 @@ def preprocess(input_path, save_path):
         new_image = nib.Nifti1Image(resized, affine=np.eye(4))
 
         nib.save(new_image, save_path)
+        
+        return True
+    else:
+        print('failed')
+        return False
 
 if __name__ == "__main__":
     
@@ -205,9 +210,10 @@ if __name__ == "__main__":
     for i, row in df.iterrows():
         ID = row['ID']
         nii_path = row['file_name']
-        preprocess(nii_path, os.path.join(save_dir, ID + '.nii'))
-        df.loc[i, 'processed_file_name'] = os.path.join(save_dir, ID + '.nii')
-
+        out = preprocess(nii_path, os.path.join(save_dir, ID + '.nii'))
+        if out:
+            df.loc[i, 'processed_file_name'] = os.path.join(save_dir, ID + '.nii')
+    df = df[df['processed_file_name']!=-1].reset_index(drop=True)
     df.to_csv(eval_csv_path, index=False)
 
 
