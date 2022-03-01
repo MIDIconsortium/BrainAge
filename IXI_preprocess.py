@@ -1,6 +1,7 @@
 import numpy as np
 import nibabel as nib
 import monai
+from . import utils
 from monai.transforms import (
     AddChannel, 
     Resize, 
@@ -25,8 +26,9 @@ def preprocess(input_path, save_path):
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
     ID = re.search('IXI[0-9]{3}',input_path).group(0)
     arr, _ = LoadNifti()(input_path)
+    arr = utils.align_volume_to_ref(arr, _['affine'])
     arr = AddChannel()(arr)
-    arr = arr[:,:,::-1,:].copy()
+    #arr = arr[:,:,::-1,:].copy()
     arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,_['affine'])[0]
 
     if arr_resampled.shape[-1] > min_dim and arr_resampled.shape[-2] > min_dim and arr_resampled.shape[-3] > min_dim:
