@@ -100,6 +100,7 @@ def preprocess(input_path, save_path):
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
     arr, _ = LoadNifti()(input_path)
+    print(arr.shape)
     arr = align_volume_to_ref(arr, _['affine'])
     arr = AddChannel()(arr)
     arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr,_['affine'])[0]
