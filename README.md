@@ -54,13 +54,11 @@ By default, our models will run on CPU. In this case, inference time is 5 minute
 
 In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds per scan).
 
-PLease note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior):
-
-
+Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior):
 
 ![orientation](https://user-images.githubusercontent.com/67752614/152259324-7395c9a2-5bff-432b-a0a8-b02ee332fa20.png)
 
-
+For this reason, preprocess.py automatically reorients scans to this coordinate system.
 
 # Coming soon
 
