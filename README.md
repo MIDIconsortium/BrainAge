@@ -2,7 +2,7 @@
 
 This repository contains scripts to enable readers to run the trained models presented in Wood et al., [Accurate brain-age models for routine clinical MRI examinations](https://www.sciencedirect.com/science/article/pii/S1053811922000015?via%3Dihub#fig0003), 2022, NeuroImage. The models were trained on > 23,000 axial T2-weighted head MRI scans from two large UK hospitals, and demonstrate accurate, generalisable brain-age prediction:
 
-<img src="https://user-images.githubusercontent.com/67752614/152115266-02e2c8ff-2994-4115-a0bf-75d6cf576f7f.png" width=50% height=50%>
+<img src="https://user-images.githubusercontent.com/67752614/152115266-02e2c8ff-2994-4115-a0bf-75d6cf576f7f.png" width=60% height=60%>
 
 
 
@@ -27,7 +27,7 @@ IXI_preprocess.py will create a local directory with pre-processed scans (by def
 This will save a .csv file with brain-predicted ages for each IXI participant, along with the following scatter plot:
 
 
-<img src="https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png" width=25% height=25%>
+<img src="https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png" width=35% height=35%>
 
 
 
