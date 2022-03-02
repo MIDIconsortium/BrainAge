@@ -190,7 +190,6 @@ def preprocess(input_path, save_path):
         
         return True
     else:
-        print(arr_resampled.shape)
         return False
 
 if __name__ == "__main__":
