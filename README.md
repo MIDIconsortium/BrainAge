@@ -26,7 +26,10 @@ IXI_preprocess.py will create a local directory with pre-processed scans (by def
 
 This will save a .csv file with brain-predicted ages for each IXI participant, along with the following scatter plot:
 
-![IXI_scatter](https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png)
+
+<img src="https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png" width=75% height=75%>
+
+
 
 ### Running models with external datasets
 
