@@ -157,7 +157,6 @@ def preprocess(input_path, save_path):
     arr, affine, aff_trans, ornt_trans = reorder_voxels(arr, _['affine'], 'LPS')
     arr = AddChannel()(arr)
     arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr, affine)[0]
-    print(affine, _['affine'],affine==_['affine'], '\n\n\n')
     if arr_resampled.shape[-1] > min_dim and arr_resampled.shape[-2] > min_dim and arr_resampled.shape[-3] > min_dim:
         mid_slice = arr_resampled.squeeze()[:,:,int(arr_resampled.shape[-1]/2)]
         mask = mid_slice>0.5*mid_slice.std()
@@ -191,7 +190,7 @@ def preprocess(input_path, save_path):
         
         return True
     else:
-        #print('failed')
+        print(arr_resampled.shape)
         return False
 
 if __name__ == "__main__":
