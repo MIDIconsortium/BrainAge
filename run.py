@@ -16,7 +16,7 @@ if __name__ == "__main__":
     parser.add_argument('--gpu', dest='gpu', action='store_true')
     parser.set_defaults(gpu=False)
     parser.add_argument('--ixi', dest='gpu', action='store_true')
-    parser.set_defaults(gpu=False)
+    parser.set_defaults(ixi=False)
     parser.add_argument('--return_metrics', dest='return_metrics', action='store_true')
     parser.set_defaults(return_metrics=False)
     parser.add_argument('--skull_strip', dest='return_metrics', action='store_true')
