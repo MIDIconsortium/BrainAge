@@ -75,11 +75,10 @@ if __name__ == "__main__":
     # Evaluation loop
     net.eval()
     with torch.no_grad():
-        for i, row in df.iterrows():
+        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
-            nii = nib.load(file_name)
             processed_arr = preprocess.preprocess(file_name)
-            tensor = torch.from_numpy(preprocessed_arr).view(1,1,120,120,120)
+            tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-3.5,3.5)
             tensor = tensor.to(device=device, dtype = torch.float)
