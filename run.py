@@ -10,6 +10,7 @@ import preprocess
 from monai.networks.nets import DenseNet  
 import torch
 import nibabel as nib
+import tqdm
 
 if __name__ == "__main__":
 
