@@ -3,19 +3,12 @@ import nibabel as nib
 import monai
 from monai.transforms import (
     AddChannel, 
-    Resize, 
-    ScaleIntensity, 
-    ToTensor,
-    Randomizable,
-    LoadNifti,
+    Resize,
     Spacing,
     ResizeWithPadOrCrop
 )
 import matplotlib.pyplot as plt
-import os
-import re
-import pandas as pd
-import argparse
+import warnings
 warnings.filterwarnings("ignore")
 
 def get_dims(shape, max_channels=10):
