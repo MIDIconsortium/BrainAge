@@ -76,7 +76,7 @@ if __name__ == "__main__":
     # Evaluation loop
     net.eval()
     with torch.no_grad():
-        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
+        for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
             processed_arr = preprocess.preprocess(file_name)
             tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)
