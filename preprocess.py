@@ -179,9 +179,7 @@ def preprocess(input_path):
         cropped_arr = crop_pad(resampled_arr[:,a:-a1, b:-b1,:])
         resized_arr = resize(cropped_arr)
 
-        processed_image = nib.Nifti1Image(resized_arr, affine=np.eye(4))
-
         
-        return processed_image
+        return resized_arr
     else:
         raise ValueError('Resampled MRI scan less than 130mm x 130mm x 130mm. Please only provide scans showing the full head.')
