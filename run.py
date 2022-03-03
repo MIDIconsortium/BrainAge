@@ -42,9 +42,8 @@ if __name__ == "__main__":
     net = net.to(device)
 
     if args.ixi:
-        args.project_name = 'IXI'
         assert os.path.exists(args.ixi_nii_dir), 'path to IXI .nii files not valid'
-        raw_df = pd.read_excel('/home/dw19/Downloads/IXI (1).xls')
+        raw_df = pd.read_excel(args.csv_file)
         raw_df = raw_df[~raw_df['AGE'].isnull()].reset_index(drop=True)
         raw_df = raw_df.drop_duplicates(subset='IXI_ID', keep=False).reset_index(drop=True)
         IDs = raw_df['IXI_ID'].tolist()
