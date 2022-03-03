@@ -1,97 +1,14 @@
 import numpy as np
 import pandas as pd
-import pickle
 import warnings
 warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import re
 import argparse
 import os
-import torch.nn as nn
-import torch.nn.functional as F
 import preprocess
-from monai.networks.nets import densenet169, densenet121, DenseNet  
-import monai
+from monai.networks.nets import DenseNet  
 import torch
-from torch.utils.data import Dataset, DataLoader
-from monai.transforms import (
-    Compose, 
-    ToTensor,
-    LoadNifti,
-    ToTensor,
-)
-
-class brain_age_dataset(Dataset):
-    def __init__(self, csv_file, transform = None, return_metrics=False):
-        self.file_frame = pd.read_csv(csv_file)
-        self.transform = transform
-        self.return_metrics = return_metrics
-    def __len__(self):
-        return len(self.file_frame)
-
-    def __getitem__(self, idx):
-        stack_name = self.file_frame.iloc[idx]['processed_file_name']
-        tensor = self.transform(stack_name)  
-        tensor = (tensor - tensor.mean())/tensor.std()
-        tensor = torch.clamp(tensor,-3.5,3.5)
-        ID = self.file_frame.iloc[idx]['ID']
-        if self.return_metrics:
-            age = self.file_frame.iloc[idx]['Age']  
-            return tensor, age, ID
-        else:
-            return tensor, ID
-    
-
-
-
-def evaluate_with_age(net, data_loader, eval_criterion, device):
-    val_running_loss = 0
-    valid_count = 0 
-    true_ages = []
-    pred_ages = []
-    ID2pred = {}
-    ID2age = {}
-    with torch.no_grad():
-        net.eval()
-        for k, data in enumerate(data_loader):
-            t2, age, IDs = data
-            t2 = t2.to(device=device, dtype = torch.float)
-            age = age.to(device=device, dtype=torch.float)
-            age = age.reshape(-1,1)
-
-            pred_age = net(t2)
-            for pred, true, ID in zip(pred_age, age, IDs):
-                pred_ages.append(pred.item())
-                true_ages.append(true.item())
-
-                ID2pred[ID] = np.round(pred.item(), 1)
-                ID2age[ID] = np.round(true.item(), 1)
-
-                    
-            
-                
-            val_running_loss += eval_criterion(pred_age, age).sum().detach().item()
-            valid_count += t2.shape[0]
-            
-        val_loss = val_running_loss/valid_count
-        corr_mat = np.corrcoef(true_ages, pred_ages)
-        corr = corr_mat[0,1]
-
-        return val_loss, corr, true_ages, pred_ages, ID2pred, ID2age
-    
-def evaluate_without_age(net, data_loader, device):
-    ID2pred = {}
-    with torch.no_grad():
-        net.eval()
-        for k, data in enumerate(data_loader):
-            t2,  IDs = data
-            t2 = t2.to(device=device, dtype = torch.float)
-
-            pred_age = net(t2)
-            for pred, ID in zip(pred_age, IDs):
-                ID2pred[ID] = np.round(pred.item(), 1)
-
-        return ID2pred
 
 if __name__ == "__main__":
 
@@ -125,6 +42,7 @@ if __name__ == "__main__":
     net = net.to(device)
 
     if args.ixi:
+        args.project_name = 'IXI'
         assert os.path.exists(args.ixi_nii_dir), 'path to IXI .nii files not valid'
         raw_df = pd.read_excel('/home/dw19/Downloads/IXI (1).xls')
         raw_df = raw_df[~raw_df['AGE'].isnull()].reset_index(drop=True)
@@ -180,9 +98,6 @@ if __name__ == "__main__":
     else:
         out_df.to_csv('./{}_output.csv'.format(args.project_name))
     
-
-
-
     if args.return_metrics:
         val_loss = sum([np.abs(a-b) for a, b in zip(brain_predicted_ages, chronological_ages)])/len(brain_predicted_ages)
         corr_mat = np.corrcoef(chronological_ages, brain_predicted_ages)
