@@ -16,6 +16,7 @@ import os
 import re
 import pandas as pd
 import argparse
+warnings.filterwarnings("ignore")
 
 def get_dims(shape, max_channels=10):
     """Get the number of dimensions and channels from the shape of an array.
