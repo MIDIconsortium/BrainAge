@@ -153,12 +153,13 @@ def preprocess(input_path):
     min_dim = 130
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
-    arr, _ = LoadNifti()(input_path)
-    arr, affine, aff_trans, ornt_trans = reorder_voxels(arr, _['affine'], 'LPS')
-    arr = AddChannel()(arr)
-    arr_resampled =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(arr, affine)[0]
-    if arr_resampled.shape[-1] > min_dim and arr_resampled.shape[-2] > min_dim and arr_resampled.shape[-3] > min_dim:
-        mid_slice = arr_resampled.squeeze()[:,:,int(arr_resampled.shape[-1]/2)]
+    nii = nib.load(input_path)
+    arr, affine = np.asarray(nii.dataobj), nii.affine
+    reoriented_arr, reoriented_affine, *_ = reorder_voxels(arr, affine, 'LPS')
+    reoriented_arr = AddChannel()(reoriented_arr)
+    resampled_arr =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
+    if resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim:
+        mid_slice = resampled_arr.squeeze()[:,:,int(resampled_arr.shape[-1]/2)]
         mask = mid_slice>0.5*mid_slice.std()
         a, b = np.argmax(mask, axis=0)[int(mask.shape[1]/2)], np.argmax(mask, axis=1)[int(mask.shape[0]/2)]
         a1, b1 = np.argmax(np.flipud(mask), axis=0)[int(mask.shape[1]/2)], np.argmax(np.fliplr(mask), axis=1)[int(mask.shape[0]/2)]
@@ -181,10 +182,10 @@ def preprocess(input_path):
         else:
             a1 = 1
 
-        cropped = crop_pad(arr_resampled[:,a:-a1, b:-b1,:])
-        resized = resize(cropped)
+        cropped_arr = crop_pad(resampled_arr[:,a:-a1, b:-b1,:])
+        resized_arr = resize(cropped_arr)
 
-        new_image = nib.Nifti1Image(resized, affine=np.eye(4))
+        new_image = nib.Nifti1Image(resized_arr, affine=np.eye(4))
 
         
         return new_image
