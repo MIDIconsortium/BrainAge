@@ -83,7 +83,7 @@ if __name__ == "__main__":
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-3.5,3.5)
             tensor = tensor.to(device=device, dtype = torch.float)
-            ID = self.file_frame.iloc[idx]['ID']               
+            ID = file_frame.iloc[idx]['ID']               
 
             brain_predicted_ages.append(np.round(net(tensor).item(), 1))
             if args.return_metrics:
