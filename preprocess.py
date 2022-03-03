@@ -148,7 +148,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path, save_path):
+def preprocess(input_path):
     border = 5
     min_dim = 130
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
@@ -189,4 +189,4 @@ def preprocess(input_path, save_path):
         
         return new_image
     else:
-        raise ValueError('A very specific bad thing happened')
+        raise ValueError('Resampled MRI scan less than 130mm x 130mm x 130mm. Please only provide scans showing the full head.')
