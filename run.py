@@ -78,13 +78,13 @@ if __name__ == "__main__":
     with torch.no_grad():
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
+            ID = row['ID'] 
             processed_arr = preprocess.preprocess(file_name)
             tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-3.5,3.5)
             tensor = tensor.to(device=device, dtype = torch.float)
-            ID = file_frame.iloc[idx]['ID']               
-
+                          
             brain_predicted_ages.append(np.round(net(tensor).item(), 1))
             if args.return_metrics:
                 chronological_ages.append(np.round(row['Age'],1))
