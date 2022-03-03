@@ -186,44 +186,7 @@ def preprocess(input_path, save_path):
 
         new_image = nib.Nifti1Image(resized, affine=np.eye(4))
 
-        nib.save(new_image, save_path)
         
-        return True
+        return new_image
     else:
-        return False
-
-if __name__ == "__main__":
-    
-    parser = argparse.ArgumentParser()
-    # Add an argument
-    parser.add_argument('--raw_csv_path', type=str, required=True)
-    parser.add_argument('--processed_nii_dir', type=str, default='./T2_processed_nii/')
-    parser.add_argument('--processed_csv_path', type=str, default='./brain_age_evaluation_dataset.csv')
-    args = parser.parse_args()
-    csv_path, eval_csv_path, save_dir = args.raw_csv_path, args.processed_csv_path, args.processed_nii_dir
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-    df = pd.read_csv(csv_path)
-    df['processed_file_name'] = -1
-    for i, row in df.iterrows():
-        ID = row['ID']
-        nii_path = row['file_name']
-        out = preprocess(nii_path, os.path.join(save_dir, ID + '.nii'))
-        if out:
-            df.loc[i, 'processed_file_name'] = os.path.join(save_dir, ID + '.nii')
-    df = df[df['processed_file_name']!=-1].reset_index(drop=True)
-    df.to_csv(eval_csv_path, index=False)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        raise ValueError('A very specific bad thing happened')
