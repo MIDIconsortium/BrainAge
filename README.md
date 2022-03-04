@@ -16,9 +16,9 @@ The code requires the data to be in Nifti file format (.nii or .nii.gz extension
 
 Running our models is straightforward. All that is needed is a .csv file with the following two columns:
 
-- 'ID' which is a unique identifier for each participant/scanning session e.g., 'pat119' etc. (string).
+- 'ID' (which is a unique identifier for each participant/scanning session e.g., 'pat119' etc.).
 
-- 'file_name' which gives the absolute path to the Nifti file for each participant (string).
+- 'file_name' (which gives the absolute path to the Nifti file for each participant).
 
 Optionally, users can also provide a third 'Age' column in the input .csv file, which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots). 
 
