@@ -28,9 +28,9 @@ Brain-age prediction can then be performed using the following command:
 
 This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. If a scatter-plot is required, run.py should be called with the additional argument --return_metrics
 
-By default, our model will run on a cpu, and taskes ~ seconds to preprocess and return a brain-age prediction for each scan. If a GPU is available, run.py should be called with the additional argument --gpu
+By default, our model will run on a cpu, and taskes ~ seconds to preprocess and return a brain-age prediction for each scan. If a GPU is available, run.py should be called with the additional argument --gpu (in this case, run time is ~2 seconds per scan).
 
-By default, run.py assumes axial T2-weighted scans are provided. If instead axial diffusion-weighted scans are provided, then run.py should be called with the additional argument --sequence dwi
+By default, run.py assumes axial T2-weighted scans are provided. If instead axial diffusion-weighted scans are provided, then run.py should be called with the additional argument --sequence dwi to use our DWI model.
 
 Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior). For this reason, run.py automatically reorients scans to this coordinate system.
 
