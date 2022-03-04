@@ -182,4 +182,4 @@ def preprocess(input_path):
         
         return resized_arr
     else:
-        raise ValueError('Resampled MRI scan less than 130mm x 130mm x 130mm. Please only provide scans showing the full head.')
+        raise ValueError('Resampled MRI scan less than 130mm x 130mm x 130mm. Please only provide scans showing the full head (provided scans had shape {}).'.format(resampled_arr.shape))
