@@ -32,11 +32,7 @@ By default, our model will run on a cpu, and taskes ~ seconds to preprocess and 
 
 By default, run.py assumes axial T2-weighted scans are provided. If instead axial diffusion-weighted scans are provided, then run.py should be called with the additional argument --sequence dwi
 
-Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior):
-
-![orientation](https://user-images.githubusercontent.com/67752614/152259324-7395c9a2-5bff-432b-a0a8-b02ee332fa20.png)
-
-For this reason, run.py automatically reorients scans to this coordinate system.
+Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior). For this reason, run.py automatically reorients scans to this coordinate system.
 
 ### Running models with Information eXtraction from Images (IXI) dataset
 To reproduce the results on the open-access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). Brain-age prediction can then be performed using the following command:
