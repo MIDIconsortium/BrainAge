@@ -99,19 +99,19 @@ if __name__ == "__main__":
     out_df.to_csv('./{}_output.csv'.format(args.project_name))
     
     if args.return_metrics:
-        val_loss = sum([np.abs(a-b) for a, b in zip(brain_predicted_ages, chronological_ages)])/len(brain_predicted_ages)
+        MAE = sum([np.abs(a-b) for a, b in zip(brain_predicted_ages, chronological_ages)])/len(brain_predicted_ages)
         corr_mat = np.corrcoef(chronological_ages, brain_predicted_ages)
         corr = corr_mat[0,1]
 
         fig = plt.figure(figsize=(8,8))
         ax = fig.add_subplot(111)
-        ax.scatter(true_ages, pred_ages, alpha=0.3)
+        ax.scatter(chronological_ages, brain_predicted_ages, alpha=0.3)
         ax.plot(true_ages, true_ages,linestyle= '--', color='black')
-        ax.set_ylim([min(true_ages), max(true_ages)])
+        ax.set_ylim([min(chronological_ages), max(chronological_ages)])
         ax.set_aspect('equal')
         ax.set_xlabel('Chronological age')
         ax.set_ylabel('Predicted age')
-        ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
+        ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(MAE, corr))
         fig.savefig('./{}_scatter.png'.format(args.project_name), facecolor='w')
 
    
