@@ -77,6 +77,8 @@ if __name__ == "__main__":
     net.eval()
     with torch.no_grad():
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
+            if index > 50:
+                break
             file_name = row['file_name']
             ID = row['ID'] 
             processed_arr = preprocess.preprocess(file_name)
@@ -93,10 +95,8 @@ if __name__ == "__main__":
         out_df = pd.DataFrame({'ID':IDs,'Chronological age':chronological_ages,'Predicted_age (years)':brain_predicted_ages}).set_index('ID')
     else:
         out_df = pd.DataFrame({'ID':IDs,'Predicted_age (years)':brain_predicted_ages}).set_index('ID')
-    if ages.ixi:
-        out_df.to_csv('./IXI_output.csv')
-    else:
-        out_df.to_csv('./{}_output.csv'.format(args.project_name))
+
+    out_df.to_csv('./{}_output.csv'.format(args.project_name))
     
     if args.return_metrics:
         val_loss = sum([np.abs(a-b) for a, b in zip(brain_predicted_ages, chronological_ages)])/len(brain_predicted_ages)
@@ -114,20 +114,4 @@ if __name__ == "__main__":
         ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
         fig.savefig('./{}_scatter.png'.format(args.project_name), facecolor='w')
 
-    
-
-
    
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
