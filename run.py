@@ -80,6 +80,8 @@ if __name__ == "__main__":
             file_name = row['file_name']
             ID = row['ID'] 
             processed_arr = preprocess.preprocess(file_name)
+            if not processed_arr:
+                continue
             tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-3.5,3.5)
