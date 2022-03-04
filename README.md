@@ -8,7 +8,7 @@ This repository contains scripts to enable readers to run the trained models pre
 
 # Requirements
 
-The code requires the data to be in Nifti file format and makes heavy use of the [Project Monai library](https://monai.io/). This repository is compatible with python 3.6. See requirements.txt for all prerequisites; you can also install them using the following command:
+The code requires the data to be in Nifti file format (.nii or .nii.gz extension) and makes use of the [Project Monai library](https://monai.io/). This repository is compatible with python 3.6. See requirements.txt for all prerequisites; you can also install them using the following command:
 
 `pip install -r requirements.txt`
 
@@ -18,7 +18,7 @@ Running our models is straightforward. All that is needed is a .csv file with th
 
 - 'ID' which is a unique identifier for each participant/scanning session e.g., 'pat119' etc. (string).
 
-- 'file_name' which gives the absolute path to the Nifti file (.nii or .nii.gz extension) for each participant (string).
+- 'file_name' which gives the absolute path to the Nifti file for each participant (string).
 
 Optionally, users can also provide a third 'Age' column in the input .csv file, which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots). 
 
