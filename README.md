@@ -13,61 +13,47 @@ The code requires the data to be in Nifti file format and makes heavy use of the
 `pip install -r requirements.txt`
 
 # Usage
+
+Running our models is straightforward. All that is needed is a .csv file with the following two columns:
+
+- 'ID' which is a unique identifier for each participant/scanning session e.g., 'pat119' etc. (string).
+
+- 'file_name' which gives the absolute path to the Nifti file (.nii or .nii.gz extension) for each participant (string).
+
+Optionally, users can also provide a third 'Age' column in the input .csv file, which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots). 
+
+Brain-age prediction can then be performed using the following command:
+
+`python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE`.
+
+This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. If a scatter-plot is required, run.py should be called with the additional argument --return_metrics.
+
+By default, our model will run on a cpu, and taskes ~ seconds to preprocess and return a brain-age prediction for each scan. If a GPU is available, run.py should be called with the additional argument --gpu
+
+By default, run.py assumes axial T2-weighted scans are provided. If instead axial diffusion-weighted scans are provided, then run.py should be called with the additional argument --sequence dwi
+
+Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior):
+
+![orientation](https://user-images.githubusercontent.com/67752614/152259324-7395c9a2-5bff-432b-a0a8-b02ee332fa20.png)
+
+For this reason, run.py automatically reorients scans to this coordinate system.
+
 ### Running models with Information eXtraction from Images (IXI) dataset
-To reproduce the results on the open-access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). To be compatible for use with our models, these scans must first be proprocessed (resampled to 1mm^3 isotropic, cropped/padded etc.). This can be done using the following command:
+To reproduce the results on the open-access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). Brain-age prediction can then be performed using the following command:
 
-`python IXI_preprocess.py --input_nii_dir /path/to/IXI/files --csv_path /path/to/IXI/csv/file`
-
-Here, '/path/to/IXI/files' is the absolute path to the directory where the IXI scans in Nifti format have been unzipped to (this should contain files such as 'IXI497-Guys-1002-T2.nii.gz' etc), whereas '/path/to/IXI/csv/file' is the location of the saved IXI csv file e.g., /home/user/Downloads/IXI.xls' etc.
-
-IXI_preprocess.py will create a local directory with pre-processed scans (by default, this is './IXI_nii', although this can be specified by passing an additional '--processed_nii_dir' argument). It will also generate a csv file containing the locations of the preprocessed files which the models need to run ('./brain_age_eval.csv'). Brain-age prediction can then be performed using the following command:
-
-`python run_IXI.py`
+`python run.py --ixi --project_name IXI --csv_file /home/dw19/Downloads/IXI_file.xls --ixi_nii_dir /PATH/TO/IXI/NII/FILES --return_metrics`
 
 This will save a .csv file with brain-predicted ages for each IXI participant, along with the following scatter plot:
 
 
 <img src="https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png" width=35% height=35%>
 
+Note that /PATH/TO/IXI/NII/FILES must be the path to the extracted files after unzipping 'IXI-T2.tar', and should contain files such as 'IXI002-Guys-0828-T2.nii.gz','IXI012-HH-1211-T2.nii.gz' etc.
 
-
-### Running models with external datasets
-
-To run our brain-age models with other datasets, first pre-process the scans by running the following command:
-
-`python preprocess.py --csv_path /path/to/csv/file`
-
-This csv file should have the following two columns:
-
-- 'ID' which is a unique identifier for each participant/scanning session e.g., 'pat119' etc. (string).
-
-- 'file_name' which gives the absolute path to the Nifti file for each participant (string).
-
-Optionally, users can also provide a third 'Age' column (which gives the chronological age of each participant in years) in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots.
-
-The 'preprocess.py' script will create a local directory of pre-processed scans (by default, this is './processed_nii', but can be specified by using the '--processed_nii_dir' argument with process.py).  Brain age prediction can then be performed using the following command:
-
-`python run.py`
-
-Again, this will save a .csv file with brain-predicted ages for each participant.If MAE metrics and scatterplots are required, then use the following command (the csv file must have an 'Age' column for this to work):
-
-`python run.py --return_metrics`
-
-By default, our models will run on CPU. In this case, inference time is 5 minutes for the IXI dataset (~0.5 seconds per scan). If a GPU is available, use the following command:
-
-`python run.py --gpu`
-
-In this case, inferences time is 20 seconds for the IXI dataset (~0.03 seconds per scan).
-
-Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior):
-
-![orientation](https://user-images.githubusercontent.com/67752614/152259324-7395c9a2-5bff-432b-a0a8-b02ee332fa20.png)
-
-For this reason, preprocess.py automatically reorients scans to this coordinate system.
 
 # Coming soon
 
-We will be releasing our 'skull-stripped' model which takes as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our diffusion-weighted model, and our volumetric T1-weighted models (raw and skull-stripped).
+We will be releasing our 'skull-stripped' model which takes as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our volumetric T1-weighted models (raw and skull-stripped).
 
 # Citation
 If you found this repository useful, please consider citing our work:
