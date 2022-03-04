@@ -182,5 +182,5 @@ def preprocess(input_path):
         
         return resized_arr
     else:
-        print('Resampled MRI scan less than 130mm x 130mm x 130mm. Please only provide scans showing the full head (provided scans had shape {}).'.format(resampled_arr.shape))
+        print('Resampled MRI scan less than 130mm x 130mm x 130mm, so skipping this scan. Please only provide scans showing the full head (provided scan had shape {}).'.format(resampled_arr.shape))
         return False
