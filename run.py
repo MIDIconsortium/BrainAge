@@ -106,7 +106,7 @@ if __name__ == "__main__":
         fig = plt.figure(figsize=(8,8))
         ax = fig.add_subplot(111)
         ax.scatter(chronological_ages, brain_predicted_ages, alpha=0.3)
-        ax.plot(true_ages, true_ages,linestyle= '--', color='black')
+        ax.plot(chronological_ages, chronological_ages,linestyle= '--', color='black')
         ax.set_ylim([min(chronological_ages), max(chronological_ages)])
         ax.set_aspect('equal')
         ax.set_xlabel('Chronological age')
