@@ -77,8 +77,6 @@ if __name__ == "__main__":
     net.eval()
     with torch.no_grad():
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
-            if index > 50:
-                break
             file_name = row['file_name']
             ID = row['ID'] 
             processed_arr = preprocess.preprocess(file_name)
