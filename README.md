@@ -26,7 +26,7 @@ Brain-age prediction can then be performed using the following command:
 
 `python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE`.
 
-This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. If a scatter-plot is required, run.py should be called with the additional argument --return_metrics.
+This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. If a scatter-plot is required, run.py should be called with the additional argument --return_metrics
 
 By default, our model will run on a cpu, and taskes ~ seconds to preprocess and return a brain-age prediction for each scan. If a GPU is available, run.py should be called with the additional argument --gpu
 
