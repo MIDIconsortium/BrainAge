@@ -20,7 +20,7 @@ Running our models is straightforward. All that is needed is a .csv file with th
 
 - 'file_name' (which gives the absolute path to the Nifti file for each participant).
 
-Optionally, users can also provide a third 'Age' column in the input .csv file, which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots). 
+Optionally, users can also provide a third column named 'Age', which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots). 
 
 Brain-age prediction can then be performed using the following command:
 
