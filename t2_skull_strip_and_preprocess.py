@@ -157,6 +157,70 @@ def preprocess(input_path):
     cmd = 'hd-bet -i {} -o {} -mode fast'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
            
     os.system(cmd)
+    if not os.path.exists('./temp_data/stripped.nii.gz'):
+        return None
+    pad_size = 130
+    min_dim = 90
+    crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))
+    nii = nib.load('./temp_data/stripped.nii.gz')
+    arr, affine = np.asarray(nii.dataobj), nii.affine
+    arr = AddChannel()(arr)
+    resampled_arr =  Spacing(pixdim=(1.3, 1.3, 1.3), mode='bilinear')(arr, affine)[0]
+    mask = resampled_arr.squeeze()>resampled_arr.squeeze().std()
+    if resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim:
+    c = 1e9
+    c1 = 1e9
+    num_sag_slices = resampled_arr.shape[1]
+    for frac in [0.4, 0.45, 0.5, 0.55, 0.6]:
+        sl = int(frac*num_sag_slices)          
+        z = np.argmax(mask[sl,:,:], axis=1)
+        z = np.where(z==0, np.inf, z).min().astype(int)
+
+        z1 = np.argmax(np.fliplr(mask[sl,:,:]), axis=1)
+        z1 = np.where(z1==0, np.inf, z1).min().astype(int)
+
+        if z < c:
+            c = z
+        if z1 < c1:
+            c1 = z1
+    if c < 0 or c1 < 0:
+        print('Cropping failed')
+        return None
+    temp_arr = resampled_arr[:,:,:,c:-c1]
+    mask = temp_arr.squeeze()>temp_arr.squeeze().std()
+
+    a, b, a1, b1 = 1e9, 1e9, 1e9, 1e9
+    num_slices = temp_arr.shape[-1]
+    for frac in [0.35, 0.4, 0.45, 0.5, 0.55, 0.6]:
+        sl = int(frac*num_slices)
+
+        y = np.argmax(mask[:,:,sl], axis=1)
+        y = np.where(y==0, np.inf, y).min().astype(int)
+        y1 = np.argmax(np.fliplr(mask[:,:,sl]), axis=1)
+        y1 = np.where(y1==0, np.inf, y1).min().astype(int)
+
+        x = np.argmax(mask[:,:,sl], axis=0)
+        x = np.where(x==0, np.inf, x).min().astype(int)
+        x1 = np.argmax(np.flipud(mask[:,:,sl]), axis=0)
+        x1 = np.where(x1==0, np.inf, x1).min().astype(int)
+
+        if x < a:
+            a = x
+        if y < b:
+            b = y
+        if x1 < a1:
+            a1 = x1
+        if y1 < b1:
+            b1 = y1
+    if a < 0 or a1 < 0 or b < 0 or b1 < 0:
+        return None
+    cropped_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
+    new_image = nib.Nifti1Image(cropped_arr, np.eye(4))
+    nib.save(new_image, './temp_data/cropped.nii.gz')
+    
+    return True
+    
+    
     
 if __name__ == "__main__":
 
