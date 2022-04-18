@@ -215,12 +215,9 @@ def preprocess(input_path):
             b1 = y1
     if a < 0 or a1 < 0 or b < 0 or b1 < 0:
         return None
-    cropped_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
-    new_image = nib.Nifti1Image(cropped_arr, np.eye(4))
-    nib.save(new_image, './temp_data/cropped.nii.gz')
-    
-    return True
-    
+    processed_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
+    return processed_arr
+
     
     
 if __name__ == "__main__":
