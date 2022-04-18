@@ -20,8 +20,7 @@ if __name__ == "__main__":
     parser.add_argument('--nii_path', nargs='*')
     args = parser.parse_args()
     for path in args.nii_path:
-        print(type(path))
-        arr = t2_skull_strip_and_preprocess.preprocess(args.nii_path)
+        arr = t2_skull_strip_and_preprocess.preprocess(path)
         fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12,12))
         ax1.imshow(arr.squeeze()[65,:,:], cmap='gray')
         ax2.imshow(arr.squeeze()[:,:,65], cmap='gray')
