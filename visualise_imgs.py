@@ -15,7 +15,7 @@ import os
 import t2_skull_strip_and_preprocess
 if __name__ == "__main__":
     if not os.path.exists('./processed_imgs/'):
-        osmkdir('./processed_imgs/')
+        os.mkdir('./processed_imgs/')
     parser = argparse.ArgumentParser()
     parser.add_argument('--nii_path', nargs='*')
     args = parser.parse_args()
