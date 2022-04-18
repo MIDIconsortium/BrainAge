@@ -18,6 +18,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--nii_path', nargs='*')
     args = parser.parse_args()
-    for path in parser.nii_path:
+    for path in args.nii_path:
         print(path)
     #preprocess(args.nii_path)
