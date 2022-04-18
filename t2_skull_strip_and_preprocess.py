@@ -147,7 +147,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 def preprocess(input_path):
     if not os.path.exists('./temp_data'):
         os.mkdir('./temp_data')
-    orig_nii = nib.load(os.path.join(root, f))
+    orig_nii = nib.load(input_path)
     orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
     reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
                 
