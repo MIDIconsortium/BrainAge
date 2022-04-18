@@ -19,5 +19,5 @@ if __name__ == "__main__":
     parser.add_argument('--nii_path', action='append')
     args = parser.parse_args()
     for path in parser.nii_path:
-        print(path
+        print(path)
     #preprocess(args.nii_path)
