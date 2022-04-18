@@ -167,7 +167,8 @@ def preprocess(input_path):
     arr = AddChannel()(arr)
     resampled_arr =  Spacing(pixdim=(1.3, 1.3, 1.3), mode='bilinear')(arr, affine)[0]
     mask = resampled_arr.squeeze()>resampled_arr.squeeze().std()
-    if resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim:
+    if not (resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim):
+        return None
     c = 1e9
     c1 = 1e9
     num_sag_slices = resampled_arr.shape[1]
