@@ -185,7 +185,7 @@ def preprocess(input_path):
         if z1 < c1:
             c1 = z1
     if c < 0 or c1 < 0:
-        print('Cropping failed')
+        print('Cropping failed, skipping this scan')
         return None
     temp_arr = resampled_arr[:,:,:,c:-c1]
     mask = temp_arr.squeeze()>temp_arr.squeeze().std()
@@ -214,18 +214,9 @@ def preprocess(input_path):
         if y1 < b1:
             b1 = y1
     if a < 0 or a1 < 0 or b < 0 or b1 < 0:
+        print('Cropping failed, skipping this scan')
         return None
     processed_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
     return processed_arr
-
-    
-    
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--nii_path', type=str, default='None')
-    args = parser.parse_args()
-    
-    preprocess(args.nii_path)
     
 
