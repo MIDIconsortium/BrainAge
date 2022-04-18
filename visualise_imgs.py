@@ -22,7 +22,7 @@ if __name__ == "__main__":
     for path in args.nii_path:
         arr = t2_skull_strip_and_preprocess.preprocess(path)
         fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12,12))
-        ax1.imshow(arr.squeeze()[65,:,:], cmap='gray')
+        ax1.imshow(np.rot90(arr.squeeze()[65,:,:]), cmap='gray')
         ax2.imshow(arr.squeeze()[:,:,65], cmap='gray')
         fig.savefig('./processed_imgs/{}.png'.format(len(os.listdir('./processed_imgs/'))))
         plt.close()
