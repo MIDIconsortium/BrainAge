@@ -34,7 +34,7 @@ if __name__ == "__main__":
     net = DenseNet(3,1,1)
     if args.sequence == 't2':
         if args.skull_strip:
-            net.load_state_dict(torch.load('./stripped_T2.pt'))
+            net.load_state_dict(torch.load('./strip_T2.pt'))
         else:
             net.load_state_dict(torch.load('./raw_T2.pt'))
     elif args.sequence == 't1':
