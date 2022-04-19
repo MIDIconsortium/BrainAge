@@ -91,7 +91,7 @@ if __name__ == "__main__":
 #                 t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
 #             if not type(processed_arr)==np.ndarray:
 #                 continue
-            processed_arr = np.asarray(nib.load(file_name))
+            processed_arr = np.asarray(nib.load(file_name).dataobj)
             tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
 #             if args.skull_strip:
 #                 tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
