@@ -144,7 +144,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path):
+def preprocess(input_path, use_gpu=False):
     if not os.path.exists('./temp_data'):
         os.mkdir('./temp_data')
     orig_nii = nib.load(input_path)
@@ -153,9 +153,11 @@ def preprocess(input_path):
                 
     new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
     nib.save(new_image, './temp_data/reorient.nii.gz')
-
-    cmd = 'hd-bet -i {} -o {} -mode fast'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
-           
+    if not use_gpu:
+        cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
+    else:
+        md = 'hd-bet -i {} -o {} -mode fast'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
+            
     os.system(cmd)
     if not os.path.exists('./temp_data/stripped.nii.gz'):
         return None
