@@ -83,18 +83,20 @@ if __name__ == "__main__":
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
             ID = row['ID'] 
-            if args.sequence == 't2' and not args.skull_strip:
-                processed_arr = preprocess.preprocess(file_name)
-            elif args.sequence == 't2' and args.skull_strip:
-                processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
-            elif args.sequence == 't1' and args.skull_strip:
-                t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
-            if not type(processed_arr)==np.ndarray:
-                continue
-            if args.skull_strip:
-                tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
-            else:
-                tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
+#             if args.sequence == 't2' and not args.skull_strip:
+#                 processed_arr = preprocess.preprocess(file_name)
+#             elif args.sequence == 't2' and args.skull_strip:
+#                 processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
+#             elif args.sequence == 't1' and args.skull_strip:
+#                 t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
+#             if not type(processed_arr)==np.ndarray:
+#                 continue
+            processed_arr = np.asarray(nib.load(file_name))
+            tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
+#             if args.skull_strip:
+#                 tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
+#             else:
+#                 tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
