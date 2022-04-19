@@ -8,7 +8,7 @@ import argparse
 import os
 import preprocess
 import t2_skull_strip_and_preprocess
-import t1_skull_strip_register_and preprocess
+import t1_skull_strip_register_and_preprocess
 from monai.networks.nets import DenseNet  
 import torch
 import nibabel as nib
