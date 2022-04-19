@@ -124,6 +124,6 @@ if __name__ == "__main__":
         ax.set_xlabel('Chronological age')
         ax.set_ylabel('Predicted age')
         ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(MAE, corr))
-        fig.savefig('./{}_scatter.png'.format(args.project_name), facecolor='w')
+        fig.savefig('./{}_scatter.png'.format(args.project_name), facecolor='w') 
 
    
