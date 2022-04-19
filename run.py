@@ -42,7 +42,7 @@ if __name__ == "__main__":
     else:
         raise ValueError('MRI sequence {} not currently handled'.format(args.sequence))
     if args.gpu:
-        device = torch.device('cuda:0')
+        device = torch.device('cuda')
     else:
         device = torch.device('cpu')
     net = net.to(device)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
             else:
                 tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
             tensor = (tensor - tensor.mean())/tensor.std()
-            tensor = torch.clamp(tensor,-3.5,3.5)
+            tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
                           
             brain_predicted_ages.append(np.round(net(tensor).item(), 1))
