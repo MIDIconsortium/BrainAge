@@ -7,6 +7,8 @@ import re
 import argparse
 import os
 import preprocess
+import t2_skull_strip_and_preprocess
+import t1_skull_strip_register_and preprocess
 from monai.networks.nets import DenseNet  
 import torch
 import nibabel as nib
@@ -31,10 +33,12 @@ if __name__ == "__main__":
     
     net = DenseNet(3,1,1)
     if args.sequence == 't2':
-        if not args.skull_strip:
-            net.load_state_dict(torch.load('./raw_T2.pt'))
+        if args.skull_strip:
+            net.load_state_dict(torch.load('./stripped_T2.pt'))
         else:
-            raise ValueError('Skull stripping not currently handled')
+            net.load_state_dict(torch.load('./raw_T2.pt'))
+    elif args.sequence == 't1':
+        net.load_state_dict(torch.load('./stripped_T1.pt'))
     else:
         raise ValueError('MRI sequence {} not currently handled'.format(args.sequence))
     if args.gpu:
@@ -79,10 +83,18 @@ if __name__ == "__main__":
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
             ID = row['ID'] 
-            processed_arr = preprocess.preprocess(file_name)
+            if args.sequence == 't2' and not args.skull_strip:
+                processed_arr = preprocess.preprocess(file_name)
+            elif args.sequence == 't2' and args.skull_strip:
+                processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name)
+            elif args.sequence == 't1' and args.skull_strip:
+                t1_skull_strip_register_and_preprocess.preprocess(file_name)
             if not type(processed_arr)==np.ndarray:
                 continue
-            tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)
+            if args.skull_strip:
+                tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
+            else:
+                tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-3.5,3.5)
             tensor = tensor.to(device=device, dtype = torch.float)
