@@ -142,7 +142,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path):
+def preprocess(input_path, save_dir=None):
     border = 5
     min_dim = 130
     resize = Resize(spatial_size=(120, 120, 120), mode='trilinear')
@@ -179,6 +179,11 @@ def preprocess(input_path):
         cropped_arr = crop_pad(resampled_arr[:,a:-a1, b:-b1,:])
         resized_arr = resize(cropped_arr)
 
+
+        if save_dir:
+            new_image = nib.Nifti1Image(resized_arr, np.eye(4))
+            nib.save(new_image, save_dir)
+            return None
         
         return resized_arr
     else:
