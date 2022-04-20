@@ -23,6 +23,8 @@ if __name__ == "__main__":
     parser.add_argument('--nii_path', nargs='*')
     parser.add_argument('--skull_strip', dest='skull_strip', action='store_true')
     parser.set_defaults(skull_strip=False)
+    parser.add_argument('--gpu', dest='gpu', action='store_true')
+    parser.set_defaults(skull_strip=False)
     parser.add_argument('--sequence', type=str, default='t2')
     args = parser.parse_args()
     for path in args.nii_path:
