@@ -40,6 +40,6 @@ if __name__ == "__main__":
             continue
         fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12,12))
         ax1.imshow(np.rot90(processed_arr.squeeze()[65,:,:]), cmap='gray')
-        ax2.imshow(arr.squeeze()[:,:,65], cmap='gray')
+        ax2.imshow(processed_arr.squeeze()[:,:,65], cmap='gray')
         fig.savefig('./processed_imgs/{}.png'.format(len(os.listdir('./processed_imgs/'))))
         plt.close()
