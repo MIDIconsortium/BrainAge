@@ -144,7 +144,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path, use_gpu=False):
+def preprocess(input_path, use_gpu=True, save_dir=None):
     if not os.path.exists('./temp_data'):
         os.mkdir('./temp_data')
     orig_nii = nib.load(input_path)
@@ -229,6 +229,14 @@ def preprocess(input_path, use_gpu=False):
     processed_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
     if os.path.exists('./temp_data/registered.nii.gz'):
         os.remove('./temp_data/registered.nii.gz')
+    else:
+        return None
     if os.path.exists('./temp_data/stripped.nii.gz'):
         os.remove('./temp_data/stripped.nii.gz')
+    else:
+        return None
+    if save_dir:
+        new_image = nib.Nifti1Image(processed_arr, np.eye(4))
+        nib.save(new_image, save_dir)
+        
     return processed_arr
