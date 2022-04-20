@@ -1,0 +1,262 @@
+import numpy as np
+import pandas as pd
+import warnings
+warnings.filterwarnings("ignore")
+import matplotlib.pyplot as plt
+import re
+import argparse
+import os
+import preprocess
+import t2_skull_strip_and_preprocess
+import t1_skull_strip_register_and_preprocess
+from monai.networks.nets import DenseNet  
+import torch
+import nibabel as nib
+import tqdm
+
+import torch.optim as optim
+from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
+from sklearn.model_selection import train_test_split
+from monai.networks.nets import DenseNet  
+
+from torch.utils.data import Dataset, DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
+from torch.utils.data.sampler import SubsetRandomSampler
+
+from monai.transforms import (
+    AddChannel, 
+    Compose,
+    Resize, 
+    ScaleIntensity, 
+    ToTensor,
+    Randomizable,
+    LoadNifti,
+    Spacing,
+    ResizeWithPadOrCrop,
+    RandFlip, 
+)
+
+def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs = 30, patience = 5):
+    best_loss = 1e9
+    num_bad_epochs = 0
+    for epoch in range(epochs):
+        start = time.time()
+        train_loss = 0  
+        net.train()
+        train_count = 0
+        if num_bad_epochs >= patience:
+            return None
+        for i, data in enumerate(tqdm(train_loader)):
+            im, age = data
+            im = im.to(device=device, dtype = torch.float)
+            age = age.to(device=device, dtype=torch.float)
+            age = age.reshape(-1,1)
+
+
+            optimizer.zero_grad()
+            pred_age = net(im)
+            loss = criterion(pred_age, age)
+
+            loss.backward()
+            train_count += im.shape[0]
+
+            train_loss += eval_criterion(pred_age, age).sum().detach().item()
+
+            optimizer.step()
+
+            
+        train_loss/= train_count     
+        val_loss, corr, *_ = evaluate(net, valid_loader, eval_criterion)
+        scheduler.step(val_loss)
+        if val_loss < best_loss:
+            best_loss = val_loss
+            torch.save(net.state_dict(), save_path)
+            num_bad_epochs = 0
+        else:
+            num_bad_epochs += 1   
+        
+        end = time.time()
+        lr = optimizer.param_groups[0]['lr']
+        print('Epoch: {}, lr: {:.2E}, train loss: {:.1f}, valid loss: {:.1f}, corr: {:.2f}, best loss {:.1f}, No improvement: {}'.format(epoch,
+             lr, train_loss, val_loss, corr, best_loss, num_bad_epochs))
+
+    return None
+  
+  def evaluate(net, data_loader, eval_criterion):
+    val_running_loss = 0
+    valid_count = 0 
+    true_ages = []
+    pred_ages = []
+    with torch.no_grad():
+        net.eval()
+        for k, data in enumerate(data_loader):
+            im, age = data
+            im = t2.to(device=device, dtype = torch.float)
+            age = age.to(device=device, dtype=torch.float)
+            age = age.reshape(-1,1)
+
+            pred_age = net(im)
+            for pred, true, acc in zip(pred_age, age, accs):
+                pred_ages.append(pred.item())
+                true_ages.append(true.item())
+                 
+            val_running_loss += eval_criterion(pred_age, age).sum().detach().item()
+            valid_count += im.shape[0]
+        
+        val_loss = val_running_loss/valid_count
+        corr_mat = np.corrcoef(true_ages, pred_ages)
+        corr = corr_mat[0,1]
+
+        return val_loss, corr, true_ages, pred_ages
+    
+def process(csv_file, project_name, sequence, skull_strip=False):
+    save_dir = './{}'.format(project_name)
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+    else:
+        raise ValueError('Project name ({}) already used'.format(project_name) 
+    df = pd.read_csv(csv_file)
+    df['processed_file_name'] = -1
+    for i, row in df.iterrows():
+        file_path = row['file_name']
+        ID = row['ID']
+        if args.sequence == 't2':
+            if args.skull_strip:
+                _ = t2_skull_strip_and_preprocess.preprocess(file_name, use_gpu=args.gpu, save_path=os.path.join(save_dir, ID + '.nii.gz'))
+            else:
+                _ = preprocess.preprocess(file_name, save_path=os.path.join(save_dir, ID + '.nii.gz'))
+        elif args.sequence == 't1' and args.skull_strip:
+            _ = t1_skull_strip_register_and_preprocess.preprocess(file_name, use_gpu=args.gpu, save_path=os.path.join(save_dir, ID + '.nii.gz'))
+        else:
+            raise ValueError('MRI sequence {} not currently handled'.format(args.sequence + (' (skull_strip: args.skull_strip)')))
+        df.loc[i, 'processed_file_name'] = os.path.join(save_dir, ID + '.nii.gz')
+    return df
+
+
+class dataset(Dataset):
+    """Brain-age fine-tuning dataset"""
+
+    def __init__(self, csv_file, transform = None):
+        self.file_frame = pd.read_csv(csv_file)
+        self.transform = transform
+        
+    def __len__(self):
+        return len(self.file_frame)
+
+    def __getitem__(self, idx):
+        stack_name = self.file_frame.iloc[idx]['processed_file_name']
+        tensor = self.transform(stack_name)  
+        tensor = (tensor - tensor.mean())/tensor.std()
+        tensor = torch.clamp(tensor,-1, 5)
+        age = self.file_frame.iloc[idx]['Age']   
+        return tensor, age
+    
+def get_train_valid_loader(csv_file,
+                           batch_size=4,
+                           random_seed=10,
+                           valid_size=0.1,
+                           aug='none'):
+    if aug == 'none':
+        train_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
+    elif aug == 'flip':
+        train_transforms = Compose([LoadNifti(image_only=True), 
+                                RandFlip(prob=0.5, spatial_axis=0),
+                                ToTensor()])
+        
+    valid_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
+    test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
+   
+    train_dataset = dataset(csv_file, transform=train_transforms)   
+    valid_dataset = dataset(csv_file, transform=valid_transforms)
+    test_dataset = dataset(csv_file, transform=test_transforms)
+    
+    ids = np.arange(len(train_dataset))
+    
+    train_idx, test_idx = train_test_split(ids, test_size=0.2, random_state=random_seed)
+    train_idx, valid_idx = train_test_split(train_idx, test_size=0.1, random_state=random_seed)
+           
+    train_sampler = SubsetRandomSampler(train_idx)
+    valid_sampler = SubsetRandomSampler(valid_idx)
+    test_sampler = SubsetRandomSampler(test_idx)
+
+    #Creating intsances of training and validation dataloaders
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=train_sampler)
+    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, sampler=valid_sampler)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, sampler=test_sampler)
+
+    print('Number of training scans: {}, valid scans: {}, test scans: {}'.format(len(train_idx), len(valid_idx), len(test_idx)))
+    return train_loader, valid_loader, test_loader
+    
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--gpu', dest='gpu', action='store_true')
+    parser.set_defaults(gpu=False)
+    parser.add_argument('--skull_strip', dest='skull_strip', action='store_true')
+    parser.set_defaults(skull_strip=False)
+    parser.add_argument('--aug', type=str, default='flip')
+    parser.add_argument('--valid_size', type=float, default=0.1)
+    parser.add_argument('--test_size', type=float, default=0.2)
+    parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--csv_file', type=str, required=True)
+    parser.add_argument('--project_name', type=str, required=True)
+    args = parser.parse_args()
+   
+    if args.sequence == 't2':
+        if args.skull_strip:
+            net.load_state_dict(torch.load('./strip_T2.pt'))
+        else:
+            net.load_state_dict(torch.load('./raw_T2.pt'))
+    elif args.sequence == 't1':
+        net.load_state_dict(torch.load('./stripped_T1.pt'))
+    else:
+        raise ValueError('MRI sequence {} not currently handled'.format(args.sequence))
+    if args.gpu:
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+    
+    df = process(args.csv_file, args.project_name, args.sequence, args.skull_strip)                     
+                                            
+    train_loader, valid_loader, test_loader = get_train_valid_loader(df,
+                           batch_size=args.batch_size,
+                           random_seed=args.seed,
+                           valid_size=args.valid_size,
+                           test_size = args.test_size,
+                           aug=args.aug)
+                         
+    model_save_path = save_dir + datetime.datetime.now().strftime('%d-%m-%y-%H_%M.pt')
+
+    params =  net.parameters() 
+    optimizer = optim.Adam(net.parameters(), lr=1e-4)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=4)
+
+    criterion = nn.L1Loss()
+    eval_criterion = nn.L1Loss(reduction='sum')
+    out = train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs=60, patience=10)
+
+
+    best_state_dict = torch.load(model_save_path)
+    net.load_state_dict(best_state_dict)
+
+
+    loss, corr, true_ages, pred_ages = evaluate(net, test_loader, eval_criterion)
+
+
+
+    fig = plt.figure(figsize=(8,8))
+    ax = fig.add_subplot(111)
+    ax.scatter(true_ages, pred_ages, alpha=0.3)
+    ax.plot(true_ages, true_ages,linestyle= '--', color='black')
+    ax.set_ylim([min(true_ages), max(true_ages)])
+    ax.set_aspect('equal')
+    ax.set_xlabel('Chronological age')
+    ax.set_ylabel('Predicted age')
+    ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
+    fig.savefig(os.path.join(save_fig, 'fine_tune_scatter.png'))
+plt.pause(0.1)
+                      
+    
+    
+    
