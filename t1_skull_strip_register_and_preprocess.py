@@ -175,7 +175,7 @@ def preprocess(input_path, use_gpu=False):
     nii = nib.load('./temp_data/registered.nii.gz')
     arr, affine = np.asarray(nii.dataobj), nii.affine
     arr = AddChannel()(arr)
-    resampled_arr =  Spacing(pixdim=(1.3, 1.3, 1.3), mode='bilinear')(arr, affine)[0]
+    resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
     mask = resampled_arr.squeeze()>resampled_arr.squeeze().std()
     if not (resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim):
         return None
