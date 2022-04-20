@@ -27,11 +27,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     for path in args.nii_path:
         if args.sequence == 't2' and not args.skull_strip:
-            processed_arr = preprocess.preprocess(file_name)
+            processed_arr = preprocess.preprocess(path)
         elif args.sequence == 't2' and args.skull_strip:
-            processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
+            processed_arr = t2_skull_strip_and_preprocess.preprocess(path, args.gpu)
         elif args.sequence == 't1' and args.skull_strip:
-            t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
+            t1_skull_strip_register_and_preprocess.preprocess(path, args.gpu)
         else:
             raise ValueError('MRI sequence {} (skull_strip: {}) not currently handled'.format(args.sequence, args.skull_strip))
         if not type(processed_arr)==np.ndarray:
