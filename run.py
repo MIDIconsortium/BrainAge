@@ -32,8 +32,11 @@ if __name__ == "__main__":
     parser.add_argument('--project_name', type=str, required=True)
     args = parser.parse_args()
     
-    os.mkdir('./{}'.format(args.project_name))
-    
+    if not os.path.exists('./{}'.format(args.project_name)):
+        os.mkdir('./{}'.format(args.project_name))
+    else:
+        os.mkdir('./{}_{}'.format(args.project_name, datetime.datetime.now().strftime('%d_%m_%y_%H_%M')))
+            
     net = DenseNet(3,1,1)
     if args.sequence == 't2':
         if args.skull_strip:
@@ -46,7 +49,7 @@ if __name__ == "__main__":
         else:
             raise ValueError('Raw T1 model not currently handled. Please specify --skull_strip if skull-stripped and registered (MNI152) T1 model is desired')
     else:
-        raise ValueError('MRI sequence {} not currently handled'.format(args.sequence))
+        raise ValueError('{} MRI sequence not currently handled (must be one of t2 or t1; DWI and FLAIR coming soon!)'.format(args.sequence))
     if args.gpu:
         device = torch.device('cuda')
     else:
