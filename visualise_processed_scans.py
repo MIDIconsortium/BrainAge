@@ -12,9 +12,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import argparse
 import os
-import t2_skull_strip_and_preprocess
-import t1_skull_strip_register_and_preprocess
-import preprocess
+import PreProcess
 
 if __name__ == "__main__":
     if not os.path.exists('./processed_imgs/'):
