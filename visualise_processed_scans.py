@@ -33,7 +33,7 @@ if __name__ == "__main__":
     
     
     args = parser.parse_args()
-    for path in args.nii_path
+    for path in args.nii_path:
         raw_arr, processed_arr = PreProcess.preprocess(input_path=path, use_gpu=args.gpu, save_dir=None, skull_strip=args.skull_strip, register=args.register, project_name=args.project_name, return_raw=True)
         if not type(processed_arr)==np.ndarray:
             continue
