@@ -207,7 +207,8 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
     if c < 0 or c1 < 0:
         print('Cropping failed - skipping this image ({})'.format(input_path))
         return None
-    temp_arr = resampled_arr[:,:,:,c:-c1]
+    #temp_arr = resampled_arr[:,:,:,c:-c1]
+    temp_arr = resampled_arr[:,:,:,np.maximum(resampled_arr.shape[-1]-c1-pad_size,c):-c1]
     mask = temp_arr.squeeze()>temp_arr.squeeze().std()
 
     a, b, a1, b1 = 1e9, 1e9, 1e9, 1e9
