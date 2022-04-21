@@ -38,7 +38,10 @@ if __name__ == "__main__":
         else:
             net.load_state_dict(torch.load('./raw_T2.pt'))
     elif args.sequence == 't1':
-        net.load_state_dict(torch.load('./stripped_T1.pt'))
+        if args.skull_strip:
+            net.load_state_dict(torch.load('./stripped_T1.pt'))
+        else:
+            raise ValueError('Raw T1 model not currently handled. Please specify --skull_strip if skull-stripped and registered (MNI152) T1 model is desired')
     else:
         raise ValueError('MRI sequence {} not currently handled'.format(args.sequence))
     if args.gpu:
@@ -83,36 +86,34 @@ if __name__ == "__main__":
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
             ID = row['ID'] 
-#             if args.sequence == 't2' and not args.skull_strip:
-#                 processed_arr = preprocess.preprocess(file_name)
-#             elif args.sequence == 't2' and args.skull_strip:
-#                 processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
-#             elif args.sequence == 't1' and args.skull_strip:
-#                 t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
-#             if not type(processed_arr)==np.ndarray:
-#                 continue
-            processed_arr = np.asarray(nib.load(file_name).dataobj)
-            tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
-#             if args.skull_strip:
-#                 tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
-#             else:
-#                 tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
+            if args.sequence == 't2' and not args.skull_strip:
+                processed_arr = preprocess.preprocess(file_name)
+            elif args.sequence == 't2' and args.skull_strip:
+                processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
+            elif args.sequence == 't1' and args.skull_strip:
+                t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
+            if not type(processed_arr)==np.ndarray:
+                continue
+            #processed_arr = np.asarray(nib.load(file_name).dataobj)
+            #tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
+            if args.skull_strip:
+                tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
+            else:
+                tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
                           
             brain_predicted_ages.append(np.round(net(tensor).item(), 1))
+            
             if args.return_metrics:
                 chronological_ages.append(np.round(row['Age'],1))
             IDs.append(ID)
+            
     if args.return_metrics:
-        out_df = pd.DataFrame({'ID':IDs,'Chronological age':chronological_ages,'Predicted_age (years)':brain_predicted_ages}).set_index('ID')
-    else:
-        out_df = pd.DataFrame({'ID':IDs,'Predicted_age (years)':brain_predicted_ages}).set_index('ID')
-
-    out_df.to_csv('./{}_output.csv'.format(args.project_name))
-    
-    if args.return_metrics:
+        
+        pd.DataFrame({'ID':IDs,'Chronological age':chronological_ages,'Predicted_age (years)':brain_predicted_ages}).set_index('ID').to_csv('./{}_brain_age_output.csv'.format(args.project_name))
+        
         MAE = sum([np.abs(a-b) for a, b in zip(brain_predicted_ages, chronological_ages)])/len(brain_predicted_ages)
         corr_mat = np.corrcoef(chronological_ages, brain_predicted_ages)
         corr = corr_mat[0,1]
@@ -126,6 +127,7 @@ if __name__ == "__main__":
         ax.set_xlabel('Chronological age')
         ax.set_ylabel('Predicted age')
         ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(MAE, corr))
-        fig.savefig('./{}_scatter.png'.format(args.project_name), facecolor='w') 
-
-   
+        fig.savefig('./{}_scatter.png'.format(args.project_name), facecolor='w')
+        
+    else:
+        pd.DataFrame({'ID':IDs,'Predicted_age (years)':brain_predicted_ages}).set_index('ID').to_csv('./{}_brain_age_output.csv'.format(args.project_name)) 
