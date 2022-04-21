@@ -148,7 +148,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None, return_raw=False):
     if skull_strip:
         if not os.path.exists('./{}/temp_data'.format(project_name)):
-            os.mkdir('./{}/temp_data'.format(project_name))
+            os.makedirs('./{}/temp_data'.format(project_name))
     orig_nii = nib.load(input_path)
     orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
     if get_dims(orig_arr.shape) != (3, 1):
