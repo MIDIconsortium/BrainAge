@@ -149,6 +149,9 @@ def preprocess(input_path, use_gpu=True, save_dir=None):
         os.mkdir('./temp_data')
     orig_nii = nib.load(input_path)
     orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
+    if get_dims(orig_arr.shape) != (3, 1):
+        print('The raw nifti image should be 3 dimensional - skipping this image ({})'.format(input_path))
+        return None
     reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
                 
     new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
