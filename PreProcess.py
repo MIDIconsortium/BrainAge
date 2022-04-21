@@ -167,7 +167,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         print('skull-stripping failed - skipping this image ({})'.format(input_path))
         return None
     pad_size = 130
-    min_dim = 90
+    min_dim = 85
     crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))
     
     if register:
