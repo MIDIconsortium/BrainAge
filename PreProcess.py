@@ -183,10 +183,8 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
         arr, affine = np.asarray(nii.dataobj), nii.affine
         arr = AddChannel()(arr)
-    if register:
-        resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
-    else:
-        resampled_arr =  Spacing(pixdim=(1.3, 1.3, 1.3), mode='bilinear')(arr, affine)[0]
+
+    resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
         
     mask = resampled_arr.squeeze()>resampled_arr.squeeze().std()
     if not (resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim):
