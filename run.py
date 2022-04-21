@@ -9,6 +9,7 @@ import os
 import preprocess
 import t2_skull_strip_and_preprocess
 import t1_skull_strip_register_and_preprocess
+import PreProcess
 from monai.networks.nets import DenseNet  
 import torch
 import nibabel as nib
@@ -86,16 +87,9 @@ if __name__ == "__main__":
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
             ID = row['ID'] 
-            if args.sequence == 't2' and not args.skull_strip:
-                processed_arr = preprocess.preprocess(file_name)
-            elif args.sequence == 't2' and args.skull_strip:
-                processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
-            elif args.sequence == 't1' and args.skull_strip:
-                processed_arr = t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
+            processed_arr = PreProcess.preprocess(input_path=file_name, use_gpu=args.gpu, save_dir=None, skull_strip=args.skull_strip, register=args.sequence=='t1', project_name=args.project_name)
             if not type(processed_arr)==np.ndarray:
                 continue
-            #processed_arr = np.asarray(nib.load(file_name).dataobj)
-            #tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
             if args.skull_strip:
                 tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
             else:
