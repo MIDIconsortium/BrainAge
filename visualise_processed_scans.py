@@ -24,22 +24,23 @@ if __name__ == "__main__":
     parser.add_argument('--skull_strip', dest='skull_strip', action='store_true')
     parser.set_defaults(skull_strip=False)
     parser.add_argument('--gpu', dest='gpu', action='store_true')
-    parser.set_defaults(skull_strip=False)
+    parser.set_defaults(gpu=False)
     parser.add_argument('--sequence', type=str, default='t2')
+    parser.add_argument('--project_name', type=str, required=True)
+    parser.add_argument('--register', dest='register', action='store_true')
+    parser.set_defaults(register=False)
+    
+    
+    
     args = parser.parse_args()
-    for path in args.nii_path:
-        if args.sequence == 't2' and not args.skull_strip:
-            processed_arr = preprocess.preprocess(path)
-        elif args.sequence == 't2' and args.skull_strip:
-            processed_arr = t2_skull_strip_and_preprocess.preprocess(path, args.gpu)
-        elif args.sequence == 't1' and args.skull_strip:
-            t1_skull_strip_register_and_preprocess.preprocess(path, args.gpu)
-        else:
-            raise ValueError('MRI sequence {} (skull_strip: {}) not currently handled'.format(args.sequence, args.skull_strip))
+    for path in args.nii_path
+        raw_arr, processed_arr = PreProcess.preprocess(input_path=path, use_gpu=args.gpu, save_dir=None, skull_strip=args.skull_strip, register=args.register, project_name=args.project_name, return_raw=True)
         if not type(processed_arr)==np.ndarray:
             continue
         fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12,12))
-        ax1.imshow(np.rot90(processed_arr.squeeze()[65,:,:]), cmap='gray')
-        ax2.imshow(processed_arr.squeeze()[:,:,65], cmap='gray')
+        ax1[0].imshow(np.rot90(raw_arr.squeeze())[int(raw_arr.squeeze().shape[0]/2),:,:])
+        ax1[2].imshow(ax1[0].imshow(np.rot90(raw_arr.squeeze())[:,:,int(raw_arr.squeeze().shape[-1]/2)])
+        ax2[0].imshow(np.rot90(processed_arr.squeeze()[65,:,:]), cmap='gray')
+        ax2[1].imshow(processed_arr.squeeze()[:,:,65], cmap='gray')
         fig.savefig('./processed_imgs/{}.png'.format(len(os.listdir('./processed_imgs/'))))
         plt.close()
