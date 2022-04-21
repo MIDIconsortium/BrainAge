@@ -145,7 +145,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None):
+def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None, return_raw=False):
     if skull_strip:
         if not os.path.exists('./{}/temp_data'.format(project_name)):
             os.mkdir('./{}/temp_data'.format(project_name))
@@ -244,5 +244,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         nib.save(new_image, save_dir)
         
     os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
-       
-    return processed_arr
+    if return_raw:
+        return orig_arr, processed_arr
+    else:  
+        return processed_arr
