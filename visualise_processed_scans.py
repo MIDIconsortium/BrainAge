@@ -37,9 +37,9 @@ if __name__ == "__main__":
         raw_arr, processed_arr = PreProcess.preprocess(input_path=path, use_gpu=args.gpu, save_dir=None, skull_strip=args.skull_strip, register=args.register, project_name=args.project_name, return_raw=True)
         if not type(processed_arr)==np.ndarray:
             continue
-        fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12,12))
+        fig, (ax1, ax2) = plt.subplots(2,2, figsize=(12,12))
         ax1[0].imshow(np.rot90(raw_arr.squeeze())[int(raw_arr.squeeze().shape[0]/2),:,:])
-        ax1[2].imshow(ax1[0].imshow(np.rot90(raw_arr.squeeze())[:,:,int(raw_arr.squeeze().shape[-1]/2)])
+        ax1[2].imshow(np.rot90(raw_arr.squeeze())[:,:,int(raw_arr.squeeze().shape[-1]/2)])
         ax2[0].imshow(np.rot90(processed_arr.squeeze()[65,:,:]), cmap='gray')
         ax2[1].imshow(processed_arr.squeeze()[:,:,65], cmap='gray')
         fig.savefig('./processed_imgs/{}.png'.format(len(os.listdir('./processed_imgs/'))))
