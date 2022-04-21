@@ -157,11 +157,11 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
     reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
                 
     new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
-    nib.save(new_image, './temp_data/reorient.nii.gz')
+    nib.save(new_image, '.{}/temp_data/reorient.nii.gz'.format(project_name))
     if use_gpu:
-        cmd = 'hd-bet -i {} -o {} -mode fast'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
+        cmd = 'hd-bet -i {} -o {} -mode fast'.format('.{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))
     else:
-        cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')       
+        cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('.{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))       
     os.system(cmd)
     if not os.path.exists('./{}/temp_data/stripped.nii.gz'.format(project_name)):
         print('skull-stripping failed - skipping this image ({})'.format(input_path))
@@ -174,7 +174,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         fixed = ants.image_read('/home/dw19/Desktop/ADNI_data/MNI152_T1_1mm_brain.nii')
         nii = nib.load('/home/dw19/Desktop/ADNI_data/MNI152_T1_1mm_brain.nii')
         fixed_arr, fixed_affine = np.asarray(nii.dataobj), nii.affine
-        moving = ants.n4_bias_field_correction(ants.image_read('./temp_data/stripped.nii.gz'))
+        moving = ants.n4_bias_field_correction(ants.image_read('./{}/temp_data/stripped.nii.gz'.format(project_name)))
         os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
         mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
         arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
