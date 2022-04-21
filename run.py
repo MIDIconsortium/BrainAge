@@ -91,7 +91,7 @@ if __name__ == "__main__":
             elif args.sequence == 't2' and args.skull_strip:
                 processed_arr = t2_skull_strip_and_preprocess.preprocess(file_name, args.gpu)
             elif args.sequence == 't1' and args.skull_strip:
-                t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
+                processed_arr = t1_skull_strip_register_and_preprocess.preprocess(file_name, args.gpu)
             if not type(processed_arr)==np.ndarray:
                 continue
             #processed_arr = np.asarray(nib.load(file_name).dataobj)
