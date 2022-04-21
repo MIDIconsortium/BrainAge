@@ -175,12 +175,12 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         nii = nib.load('./MNI152_T1_1mm_brain.nii')
         fixed_arr, fixed_affine = np.asarray(nii.dataobj), nii.affine
         moving = ants.n4_bias_field_correction(ants.image_read('./{}/temp_data/stripped.nii.gz'.format(project_name)))
-        os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+        #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
         mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
         arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
     else:
         nii = nib.load('./{}/temp_data/stripped.nii.gz'.format(project_name))
-        os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+        #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
         arr, affine = np.asarray(nii.dataobj), nii.affine
         arr = AddChannel()(arr)
     if register:
@@ -242,5 +242,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
     if save_dir:
         new_image = nib.Nifti1Image(processed_arr, np.eye(4))
         nib.save(new_image, save_dir)
+        
+    os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
        
     return processed_arr
