@@ -150,7 +150,7 @@ def preprocess(input_path, use_gpu=True, save_dir=None):
     orig_nii = nib.load(input_path)
     orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
     if get_dims(orig_arr.shape) != (3, 1):
-        print('The raw nifti image should be 3 dimensional - skipping this image ({})'.format(input_path))
+        print('The raw nifti image should be 3 dimensional, instead had shape {} - skipping this image ({})'.format(orig_arr.shape, input_path))
         return None
     reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
                 
@@ -160,15 +160,16 @@ def preprocess(input_path, use_gpu=True, save_dir=None):
         cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
     else:
         cmd = 'hd-bet -i {} -o {} -mode fast'.format('./temp_data/reorient.nii.gz', './temp_data/stripped.nii.gz')
-        
            
     os.system(cmd)
     if not os.path.exists('./temp_data/stripped.nii.gz'):
+        print('skull-stripping failed - skipping this image ({})'.format(input_path))
         return None
     pad_size = 130
     min_dim = 90
     crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))
     nii = nib.load('./temp_data/stripped.nii.gz')
+    os.remove('./temp_data/stripped.nii.gz')
     arr, affine = np.asarray(nii.dataobj), nii.affine
     arr = AddChannel()(arr)
     resampled_arr =  Spacing(pixdim=(1.3, 1.3, 1.3), mode='bilinear')(arr, affine)[0]
@@ -191,7 +192,7 @@ def preprocess(input_path, use_gpu=True, save_dir=None):
         if z1 < c1:
             c1 = z1
     if c < 0 or c1 < 0:
-        print('Cropping failed, skipping this scan')
+        print('Cropping failed - skipping this image ({})'.format(input_path))
         return None
     temp_arr = resampled_arr[:,:,:,c:-c1]
     mask = temp_arr.squeeze()>temp_arr.squeeze().std()
@@ -220,13 +221,9 @@ def preprocess(input_path, use_gpu=True, save_dir=None):
         if y1 < b1:
             b1 = y1
     if a < 0 or a1 < 0 or b < 0 or b1 < 0:
-        print('Cropping failed, skipping this scan')
+        print('Cropping failed- skipping this image ({})'.format(input_path))
         return None
     processed_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
-    if os.path.exists('./temp_data/stripped.nii.gz'):
-        os.remove('./temp_data/stripped.nii.gz')
-    else:
-        return None
     if save_dir:
         new_image = nib.Nifti1Image(processed_arr, np.eye(4))
         nib.save(new_image, save_dir)
