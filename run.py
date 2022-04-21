@@ -32,6 +32,8 @@ if __name__ == "__main__":
     parser.add_argument('--project_name', type=str, required=True)
     args = parser.parse_args()
     
+    os.mkdir('./{}'.format(args.project_name))
+    
     net = DenseNet(3,1,1)
     if args.sequence == 't2':
         if args.skull_strip:
