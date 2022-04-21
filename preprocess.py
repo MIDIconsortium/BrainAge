@@ -149,6 +149,9 @@ def preprocess(input_path, save_dir=None):
     crop_pad = ResizeWithPadOrCrop(spatial_size=(180,180,180))
     nii = nib.load(input_path)
     arr, affine = np.asarray(nii.dataobj), nii.affine
+    if get_dims(arr.shape) != (3, 1):
+        print('The raw nifti image should be 3 dimensional - skipping this image ({})'.format(input_path))
+        return None
     reoriented_arr, reoriented_affine, *_ = reorder_voxels(arr, affine, 'LPS')
     reoriented_arr = AddChannel()(reoriented_arr)
     resampled_arr =  Spacing(pixdim=(1., 1., 1.), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
