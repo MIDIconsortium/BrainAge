@@ -146,46 +146,52 @@ def reorder_voxels(vox_array, affine, voxel_order):
     return (vox_array, affine, aff_trans, ornt_trans)
 
 def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None, return_raw=False):
-    if skull_strip:
-        if not os.path.exists('./{}/temp_data'.format(project_name)):
-            os.makedirs('./{}/temp_data'.format(project_name))
+    
     orig_nii = nib.load(input_path)
     orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
     if get_dims(orig_arr.shape) != (3, 1):
         print('The raw nifti image should be 3 dimensional, instead had shape {} - skipping this image ({})'.format(orig_arr.shape, input_path))
         return None
     reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
+    
+    if skull_strip:
+        if not os.path.exists('./{}/temp_data'.format(project_name)):
+            os.makedirs('./{}/temp_data'.format(project_name))
                 
-    new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
-    nib.save(new_image, './{}/temp_data/reorient.nii.gz'.format(project_name))
-    if use_gpu:
-        cmd = 'hd-bet -i {} -o {} -mode fast'.format('./{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))
+        new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
+        nib.save(new_image, './{}/temp_data/reorient.nii.gz'.format(project_name))
+        if use_gpu:
+            cmd = 'hd-bet -i {} -o {} -mode fast'.format('./{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))
+        else:
+            cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('./{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))       
+        os.system(cmd)
+        if not os.path.exists('./{}/temp_data/stripped.nii.gz'.format(project_name)):
+            print('skull-stripping failed - skipping this image ({})'.format(input_path))
+            return None
+    
+        if register:
+            fixed = ants.image_read('./MNI152_T1_1mm_brain.nii')
+            nii = nib.load('./MNI152_T1_1mm_brain.nii')
+            fixed_arr, fixed_affine = np.asarray(nii.dataobj), nii.affine
+            moving = ants.n4_bias_field_correction(ants.image_read('./{}/temp_data/stripped.nii.gz'.format(project_name)))
+            #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+            mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
+            arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
+            resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
+        else:
+            nii = nib.load('./{}/temp_data/stripped.nii.gz'.format(project_name))
+            #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+            arr, affine = np.asarray(nii.dataobj), nii.affine
+            arr = AddChannel()(arr)
+            resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
+            
     else:
-        cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('./{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))       
-    os.system(cmd)
-    if not os.path.exists('./{}/temp_data/stripped.nii.gz'.format(project_name)):
-        print('skull-stripping failed - skipping this image ({})'.format(input_path))
-        return None
+        reoriented_arr = AddChannel()(reoriented_arr)
+        resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
+        
     pad_size = 130
     min_dim = 85
-    crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))
-    
-    if register:
-        fixed = ants.image_read('./MNI152_T1_1mm_brain.nii')
-        nii = nib.load('./MNI152_T1_1mm_brain.nii')
-        fixed_arr, fixed_affine = np.asarray(nii.dataobj), nii.affine
-        moving = ants.n4_bias_field_correction(ants.image_read('./{}/temp_data/stripped.nii.gz'.format(project_name)))
-        #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
-        mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
-        arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
-    else:
-        nii = nib.load('./{}/temp_data/stripped.nii.gz'.format(project_name))
-        #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
-        arr, affine = np.asarray(nii.dataobj), nii.affine
-        arr = AddChannel()(arr)
-
-    resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
-        
+    crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))    
     mask = resampled_arr.squeeze()>resampled_arr.squeeze().std()
     if not (resampled_arr.shape[-1] > min_dim and resampled_arr.shape[-2] > min_dim and resampled_arr.shape[-3] > min_dim):
         return None
