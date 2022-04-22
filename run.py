@@ -7,8 +7,6 @@ import re
 import argparse
 import os
 import preprocess
-import t2_skull_strip_and_preprocess
-import t1_skull_strip_register_and_preprocess
 import PreProcess
 from monai.networks.nets import DenseNet  
 import torch
