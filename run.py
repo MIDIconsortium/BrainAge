@@ -42,7 +42,13 @@ if __name__ == "__main__":
             net.load_state_dict(torch.load('./stripped_T2.pt'))
         else:
             #net.load_state_dict(torch.load('./raw_T2.pt'))
-            net.load_state_dict(torch.load('./seed_42.pt', map_location='cpu'))
+            from collections import OrderedDict
+            new_state_dict = OrderedDict()
+            state_dict = torch.load('./seed_42.pt', map_location='cpu')
+            for k, v in state_dict.items():
+                name = k[7:] # remove `module.`
+                new_state_dict[name] = v
+            net.load_state_dict(new_state_dict)
     elif args.sequence == 't1':
         if args.skull_strip:
             net.load_state_dict(torch.load('./stripped_T1.pt'))
