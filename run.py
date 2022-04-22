@@ -101,10 +101,7 @@ if __name__ == "__main__":
             processed_arr = PreProcess.preprocess(input_path=file_name, use_gpu=args.gpu, save_dir=None, skull_strip=args.skull_strip, register=args.sequence=='t1', project_name=args.project_name)
             if not type(processed_arr)==np.ndarray:
                 continue
-            if args.skull_strip:
-                tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
-            else:
-                tensor = torch.from_numpy(processed_arr).view(1,1,120,120,120)    
+            tensor = torch.from_numpy(processed_arr).view(1,1,130,130,130)
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
