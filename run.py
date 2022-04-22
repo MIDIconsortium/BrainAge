@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if not os.path.exists('./{}'.format(args.project_name)):
         os.mkdir('./{}'.format(args.project_name))
     else:
-        os.mkdir('./{}_{}'.format(args.project_name, datetime.datetime.now().strftime('%d_%m_%y_%H_%M')))
+        raise ValueError('project name ({}) aready used'.format(args.project_name))
             
     net = DenseNet(3,1,1)
     if args.sequence == 't2':
