@@ -178,12 +178,14 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
             mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
             arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
             resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
+            os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
         else:
             nii = nib.load('./{}/temp_data/stripped.nii.gz'.format(project_name))
             #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
             arr, affine = np.asarray(nii.dataobj), nii.affine
             arr = AddChannel()(arr)
             resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
+            os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
             
     else:
         reoriented_arr = AddChannel()(reoriented_arr)
@@ -247,7 +249,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         new_image = nib.Nifti1Image(processed_arr, np.eye(4))
         nib.save(new_image, save_dir)
         
-    os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+    
     if return_raw:
         return orig_arr, processed_arr
     else:  
