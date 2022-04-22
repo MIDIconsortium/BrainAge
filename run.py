@@ -42,7 +42,8 @@ if __name__ == "__main__":
         if args.skull_strip:
             net.load_state_dict(torch.load('./stripped_T2.pt'))
         else:
-            net.load_state_dict(torch.load('./raw_T2.pt'))
+            #net.load_state_dict(torch.load('./raw_T2.pt'))
+            net.load_state_dict(torch.load('./seed_42.pt'))
     elif args.sequence == 't1':
         if args.skull_strip:
             net.load_state_dict(torch.load('./stripped_T1.pt'))
