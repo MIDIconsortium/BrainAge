@@ -112,8 +112,10 @@ if __name__ == "__main__":
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
-            if args.pred_correction:              
+            if args.pred_correction and not args.skull_strip:              
                 brain_predicted_ages.append(np.round(net(tensor).item(), 1) - (-0.0627*age + 2.54))
+            elif args.pred_correction and args.skull_strip:              
+                brain_predicted_ages.append(np.round(net(tensor).item(), 1) - (-0.0854*age + 2.67))
             else:
                 brain_predicted_ages.append(np.round(net(tensor).item(), 1))
             if args.return_metrics:
