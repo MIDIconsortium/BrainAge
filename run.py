@@ -113,7 +113,7 @@ if __name__ == "__main__":
             tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
             if args.pred_correction:              
-                brain_predicted_ages.append(np.round(net(tensor).item(), 1) - (-0.0627*age + 2.54)
+                brain_predicted_ages.append(np.round(net(tensor).item(), 1) - (-0.0627*age + 2.54))
             else:
                 brain_predicted_ages.append(np.round(net(tensor).item(), 1))
             if args.return_metrics:
