@@ -25,6 +25,8 @@ if __name__ == "__main__":
     parser.set_defaults(return_metrics=False)
     parser.add_argument('--skull_strip', dest='skull_strip', action='store_true')
     parser.set_defaults(skull_strip=False)
+    parser.add_argument('--pred_correction', dest='pred_correction', action='store_true')
+    parser.set_defaults(pred_correction=False)
     parser.add_argument('--sequence', type=str, default='t2')
     parser.add_argument('--ixi_nii_dir', type=str, default='None')
     parser.add_argument('--csv_file', type=str, required=True)
@@ -89,6 +91,9 @@ if __name__ == "__main__":
     assert 'ID' in df.columns, '''No column named 'ID' in csv_file'''
     if args.return_metrics:
         assert 'Age' in df.columns, '''No column named 'Age' in csv_file, can't return brain-age metrics (MAE, Pearson's etc.)'''
+        
+    if args.pred_correction:
+        assert 'Age' in df.columns, '''No column named 'Age' in csv_file, can't correct for bias in brain-age predictions'''
     brain_predicted_ages = []
     chronological_ages = []
     IDs = []
@@ -98,6 +103,8 @@ if __name__ == "__main__":
         for index, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
             file_name = row['file_name']
             ID = row['ID'] 
+            if args.return_metrics:
+                age = row['Age']
             processed_arr = PreProcess.preprocess(input_path=file_name, use_gpu=args.gpu, save_dir=None, skull_strip=args.skull_strip, register=args.sequence=='t1', project_name=args.project_name)
             if not type(processed_arr)==np.ndarray:
                 continue
@@ -105,9 +112,10 @@ if __name__ == "__main__":
             tensor = (tensor - tensor.mean())/tensor.std()
             tensor = torch.clamp(tensor,-1,5)
             tensor = tensor.to(device=device, dtype = torch.float)
-                          
-            brain_predicted_ages.append(np.round(net(tensor).item(), 1))
-            
+            if args.pred_correction:              
+                brain_predicted_ages.append(np.round(net(tensor).item(), 1) - (-0.0627*age + 2.54)
+            else:
+                brain_predicted_ages.append(np.round(net(tensor).item(), 1))
             if args.return_metrics:
                 chronological_ages.append(np.round(row['Age'],1))
             IDs.append(ID)
