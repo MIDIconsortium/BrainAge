@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import re
 import argparse
 import os
-import preprocess
-import PreProcess
+import pre_process
 from monai.networks.nets import DenseNet  
 import torch
 import nibabel as nib
