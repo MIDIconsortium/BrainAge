@@ -13,6 +13,19 @@ import torch
 import nibabel as nib
 import tqdm
 import datetime
+from collections import OrderedDict
+
+def convert_state_dict(input_path):
+    new_state_dict = OrderedDict()
+    state_dict = torch.load('./seed_42.pt', map_location='cpu')
+    for k, v in state_dict.items():
+        if 'module' in k:
+            name = k[7:] # remove `module.`
+        else:
+            name = k
+        new_state_dict[name] = v
+    return new_state_dict
+            
 
 if __name__ == "__main__":
 
@@ -38,21 +51,19 @@ if __name__ == "__main__":
     else:
         raise ValueError('project name ({}) aready used'.format(args.project_name))
             
-    net = DenseNet(3,1,1)
+    
     if args.sequence == 't2':
         if args.skull_strip:
-            net.load_state_dict(torch.load('./stripped_T2.pt'))
+            state_dict = convert_state_dict('./stripped_T2.pt')
+            net = DenseNet(3,1,1)
+            net.load_state_dict(state_dict)
         else:
-            #net.load_state_dict(torch.load('./raw_T2.pt'))
-            from collections import OrderedDict
-            new_state_dict = OrderedDict()
-            state_dict = torch.load('./seed_42.pt', map_location='cpu')
-            for k, v in state_dict.items():
-                name = k[7:] # remove `module.`
-                new_state_dict[name] = v
-            net.load_state_dict(new_state_dict)
+            state_dict = convert_state_dict('./seed_42.pt')
+            net = DenseNet(3,1,1)
+            net.load_state_dict(state_dict)
     elif args.sequence == 't1':
         if args.skull_strip:
+            net = DenseNet(3,1,1)
             net.load_state_dict(torch.load('./stripped_T1.pt'))
         else:
             raise ValueError('Raw T1 model not currently handled. Please specify --skull_strip if skull-stripped and registered (MNI152) T1 model is desired')
