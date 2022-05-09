@@ -194,8 +194,13 @@ if __name__ == "__main__":
         
         
     args = parser.parse_args()
-   
-
+    
+    save_dir = './{}/'.format(project_name)
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+    else:
+        raise ValueError('Project name {} already used'.format(project_name)) 
+        
     if args.gpu:
         device = torch.device('cuda:1')
     else:
@@ -207,14 +212,9 @@ if __name__ == "__main__":
                            batch_size=args.batch_size,
                            random_seed=args.seed,
                            aug=args.aug)
-    save_dir = './{}/'.format(project_name)
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-    else:
-        raise ValueError('Project name {} already used'.format(project_name))                     
+                        
     model_save_path = save_dir + datetime.datetime.now().strftime('{}_%d-%m-%y-%H_%M.pt'.format(args.sequence))
 
-     
     if args.sequence == 't2':
         if args.skull_strip:
             state_dict = convert_state_dict('./Models/T2/Skull_stripped/seed_42.pt')
@@ -243,7 +243,7 @@ if __name__ == "__main__":
 
     criterion = nn.L1Loss()
     eval_criterion = nn.L1Loss(reduction='sum')
-    out = train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs=60, patience=12)
+    out = train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, model_save_path, epochs=60, patience=12)
 
     best_state_dict = torch.load(model_save_path)
     net.load_state_dict(best_state_dict)
@@ -260,7 +260,7 @@ if __name__ == "__main__":
     ax.set_xlabel('Chronological age')
     ax.set_ylabel('Predicted age')
     ax.set_title('MAE = {:.2f} years, p = {:.2f}\n'.format(loss, corr))
-    fig.savefig(os.path.join(save_fig, 'fine_tune_scatter.png'))
+    fig.savefig(os.path.join(save_dir, 'fine_tune_scatter.png'))
 plt.pause(0.1)
                       
     
