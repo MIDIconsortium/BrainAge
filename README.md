@@ -42,4 +42,4 @@ Please note that our model only provides meaningful brian-age predictions for sc
 # Citation
 If you found this repository useful, please consider citing our work:
 
-Wood, D. A., Kafiabadi, S., Al Busaidi, A., Guilhem, E., Montvila, A., Lynch, J., ... & Booth, T. C. (2022). Accurate brain-age models for routine clinical MRI examinations. NeuroImage, 118871. [https://doi.org/10.1016/j.neuroimage.2022.118871]
+Wood, D. A., Kafiabadi, S., Al Busaidi, A., Guilhem, E., Montvila, A., Lynch, J., ... & Booth, T. C. (2022). Accurate brain-age models for routine clinical MRI examinations. NeuroImage, 118871. https://doi.org/10.1016/j.neuroimage.2022.118871
