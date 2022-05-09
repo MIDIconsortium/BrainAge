@@ -111,7 +111,7 @@ def process(csv_file, project_name, sequence, skull_strip=False):
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     else:
-        raise ValueError('Project name {} already used'.format(project_name) 
+        raise ValueError('Project name {} already used'.format(project_name))
     df = pd.read_csv(csv_file)
     df['processed_file_name'] = -1
     for i, row in df.iterrows():
