@@ -80,31 +80,31 @@ def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval
     return None
   
   def evaluate(net, data_loader, eval_criterion):
-    val_running_loss = 0
-    valid_count = 0 
-    true_ages = []
-    pred_ages = []
-    with torch.no_grad():
-        net.eval()
-        for k, data in enumerate(data_loader):
-            im, age = data
-            im = t2.to(device=device, dtype = torch.float)
-            age = age.to(device=device, dtype=torch.float)
-            age = age.reshape(-1,1)
+      val_running_loss = 0
+      valid_count = 0 
+      true_ages = []
+      pred_ages = []
+      with torch.no_grad():
+          net.eval()
+          for k, data in enumerate(data_loader):
+              im, age = data
+              im = t2.to(device=device, dtype = torch.float)
+              age = age.to(device=device, dtype=torch.float)
+              age = age.reshape(-1,1)
 
-            pred_age = net(im)
-            for pred, true, acc in zip(pred_age, age, accs):
-                pred_ages.append(pred.item())
-                true_ages.append(true.item())
+              pred_age = net(im)
+              for pred, true, acc in zip(pred_age, age, accs):
+                  pred_ages.append(pred.item())
+                  true_ages.append(true.item())
                  
-            val_running_loss += eval_criterion(pred_age, age).sum().detach().item()
-            valid_count += im.shape[0]
+              val_running_loss += eval_criterion(pred_age, age).sum().detach().item()
+              valid_count += im.shape[0]
         
-        val_loss = val_running_loss/valid_count
-        corr_mat = np.corrcoef(true_ages, pred_ages)
-        corr = corr_mat[0,1]
+          val_loss = val_running_loss/valid_count
+          corr_mat = np.corrcoef(true_ages, pred_ages)
+          corr = corr_mat[0,1]
 
-        return val_loss, corr, true_ages, pred_ages
+    return val_loss, corr, true_ages, pred_ages
     
 def process(csv_file, project_name, sequence, skull_strip=False):
     save_dir = './{}/'.format(project_name)
