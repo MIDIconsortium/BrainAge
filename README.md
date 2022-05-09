@@ -26,11 +26,14 @@ Brain-age prediction can then be performed using the following basic command:
 
 This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. Optionally, users can also provide a third column named 'Age', which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error [MAE] and scatter plots). To do this, simply add the argument --return_metrics to run_inference.py.
 
-By default, our model will run on a cpu. If a GPU is available, run.py should be called with the additional argument --gpu (in this case, run time is <2 seconds per scan):
+By default, our model will run on a cpu. If a GPU is available, run.py should be called with the additional argument --gpu (in this case, run time is <2 seconds per scan).
 
-By default, run.py assumes raw axial T2-weighted scans are provided. If instead volumetric T1--weighted scans are provided, then run_inference.py should be called with the following additional arguments:
+To run our skull-stripped T2 model, simply add the argument --skull_strip to run_inference.py. Likewise, to use our volumetric T1-weighted brain-age ensemble model (which also relies on skull-stripping), then run_inference.py should be called with the following additional arguments:
+
 --sequence t1
 --ensemble 
+
+Note skull-stripping is performed using [HD-BET](https://github.com/MIC-DKFZ/HD-BET) - a deep-learning based brain extraction tool which takes ~10 seconds per scan with a gpu and ~ 1 minute without.
 
 Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior). For this reason, run_inference.py automatically reorients scans to this coordinate system.
 
