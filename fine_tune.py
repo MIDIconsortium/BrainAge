@@ -234,7 +234,7 @@ if __name__ == "__main__":
     
     df = process(args.csv_file, args.project_name, args.sequence, save_dir, args.skull_strip)                     
                                             
-    train_loader, valid_loader, test_loader = get_train_valid_loader(df,
+    train_loader, valid_loader, test_loader = get_train_valid_loader(save_dir + 'fine_tuning_dataset.csv',
                            batch_size=args.batch_size,
                            random_seed=args.seed,
                            aug=args.aug)
