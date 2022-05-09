@@ -34,6 +34,18 @@ from monai.transforms import (
     RandFlip, 
 )
 
+def convert_state_dict(input_path):
+    #function to remove the keywork 'module' from pytorch state_dict (which occurs when model is trained using nn.DataParallel)
+    new_state_dict = OrderedDict()
+    state_dict = torch.load(input_path, map_location='cpu')
+    for k, v in state_dict.items():
+        if 'module' in k:
+            name = k[7:] # remove `module.`
+        else:
+            name = k
+        new_state_dict[name] = v
+    return new_state_dict
+
 def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs = 30, patience = 5):
     best_loss = 1e9
     num_bad_epochs = 0
