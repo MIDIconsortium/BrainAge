@@ -251,6 +251,6 @@ def preprocess(input_path, use_gpu=False, save_path=None, skull_strip=False, reg
             return processed_arr
     
     except Exception as e:
-        print('Preprocessing failed for image at {}, see error below: \n\n'.format(input_path))
+        print('***SKIPPING IMAGE {} AS PREPROCESSING FAILED***, see error below: \n\n'.format(input_path))
         print(e)
         return None
