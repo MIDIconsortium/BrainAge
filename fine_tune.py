@@ -104,7 +104,7 @@ def evaluate(net, data_loader, eval_criterion):
       corr_mat = np.corrcoef(true_ages, pred_ages)
       corr = corr_mat[0,1]
 
-return val_loss, corr, true_ages, pred_ages
+      return val_loss, corr, true_ages, pred_ages
     
 def process(csv_file, project_name, sequence, skull_strip=False):
     save_dir = './{}/'.format(project_name)
