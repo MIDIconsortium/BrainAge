@@ -141,7 +141,7 @@ class dataset(Dataset):
         age = self.file_frame.iloc[idx]['Age']   
         return tensor, age
     
-def get_train_valid_loader(csv_file,
+def get_train_valid_loader(df,
                            batch_size=4,
                            random_seed=10,
                            aug='none'):
@@ -159,7 +159,7 @@ def get_train_valid_loader(csv_file,
     valid_dataset = dataset(csv_file, transform=valid_transforms)
     test_dataset = dataset(csv_file, transform=test_transforms)
                          
-    df = pd..read_csv(
+
     IDs = df['ID'].unique().tolist()
     
     train_ids, test_ids = train_test_split(IDs, test_size=0.2, random_state=random_seed)
