@@ -145,7 +145,7 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None, return_raw=False):    
+def preprocess(input_path, use_gpu=False, save_path=None, skull_strip=False, register=False, project_name=None, return_raw=False):    
     if skull_strip:
         if not os.path.exists('./{}/temp_data'.format(project_name)):
             os.makedirs('./{}/temp_data'.format(project_name))
@@ -239,9 +239,9 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         print('Cropping failed- skipping this image ({})'.format(input_path))
         return None
     processed_arr =crop_pad(temp_arr[:,a:-a1, b:-b1,:])
-    if save_dir:
+    if save_path:
         new_image = nib.Nifti1Image(processed_arr, np.eye(4))
-        nib.save(new_image, save_dir)
+        nib.save(new_image, save_path)
         
 
     if return_raw:
