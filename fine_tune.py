@@ -220,12 +220,12 @@ if __name__ == "__main__":
                            random_seed=args.seed,
                            aug=args.aug)
     else:
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-        nii_dir = save_dir + 'processed_nii'
-        os.mkdir(nii_dir)
-    else:
-        raise ValueError('Project name {} already used'.format(args.project_name)) 
+        if not os.path.exists(save_dir):
+            os.mkdir(save_dir)
+            nii_dir = save_dir + 'processed_nii'
+            os.mkdir(nii_dir)
+        else:
+            raise ValueError('Project name {} already used'.format(args.project_name)) 
         
     if args.gpu:
         device = torch.device('cuda')
