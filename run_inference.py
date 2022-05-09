@@ -37,6 +37,8 @@ if __name__ == "__main__":
     parser.set_defaults(skull_strip=False)
     parser.add_argument('--pred_correction', dest='pred_correction', action='store_true')
     parser.set_defaults(pred_correction=False)
+    parser.add_argument('--ensemble', dest='ensemble', action='store_true')
+    parser.set_defaults(ensemble=False)
     parser.add_argument('--sequence', type=str, default='t2')
     parser.add_argument('--csv_file', type=str, required=True)
     parser.add_argument('--project_name', type=str, required=True)
@@ -76,7 +78,7 @@ if __name__ == "__main__":
                     Net.eval()
                     net.append(Net)
             else:
-                state_dict = convert_state_dict('./Models/T2/Skull_stripped/seed_60.pt')
+                state_dict = convert_state_dict('./Models/T1/Skull_stripped/seed_60.pt')
                 net = DenseNet(3,1,1)
                 net.load_state_dict(state_dict)
                 net = net.to(device)
