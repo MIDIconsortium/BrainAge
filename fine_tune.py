@@ -128,8 +128,8 @@ def process(csv_file, project_name, sequence, skull_strip=False):
 class dataset(Dataset):
     """Brain-age fine-tuning dataset"""
 
-    def __init__(self, csv_file, transform = None):
-        self.file_frame = pd.read_csv(csv_file)
+    def __init__(self, df, transform = None):
+        self.file_frame = df
         self.transform = transform
         
     def __len__(self):
@@ -157,9 +157,9 @@ def get_train_valid_loader(df,
     valid_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
     test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
    
-    train_dataset = dataset(csv_file, transform=train_transforms)   
-    valid_dataset = dataset(csv_file, transform=valid_transforms)
-    test_dataset = dataset(csv_file, transform=test_transforms)
+    train_dataset = dataset(df, transform=train_transforms)   
+    valid_dataset = dataset(df, transform=valid_transforms)
+    test_dataset = dataset(df, transform=test_transforms)
                          
 
     IDs = df['ID'].unique().tolist()
