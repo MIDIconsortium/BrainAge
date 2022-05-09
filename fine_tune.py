@@ -108,11 +108,6 @@ def evaluate(net, data_loader, eval_criterion):
       return val_loss, corr, true_ages, pred_ages
     
 def process(csv_file, project_name, sequence, skull_strip=False):
-    save_dir = './{}/'.format(project_name)
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-    else:
-        raise ValueError('Project name {} already used'.format(project_name))
     df = pd.read_csv(csv_file)
     df['processed_file_name'] = -1
     print('***PRE-PROCESSING RAW NIFTI FILES***')
@@ -212,7 +207,11 @@ if __name__ == "__main__":
                            batch_size=args.batch_size,
                            random_seed=args.seed,
                            aug=args.aug)
-                         
+    save_dir = './{}/'.format(project_name)
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+    else:
+        raise ValueError('Project name {} already used'.format(project_name))                     
     model_save_path = save_dir + datetime.datetime.now().strftime('{}_%d-%m-%y-%H_%M.pt'.format(args.sequence))
 
      
