@@ -116,7 +116,7 @@ def process(csv_file, project_name, sequence, skull_strip=False):
     df['processed_file_name'] = -1
     for i, row in df.iterrows():
         file_path = row['file_name']
-        ID = row['ID']
+        ID = str(row['ID'])
         save_path = os.path.join(save_dir, ID + '.nii.gz')
         _ = pre_process.preprocess(input_path=file_name, save_path = save_path, use_gpu=args.gpu, skull_strip=args.skull_strip, register=args.sequence=='t1', project_name=args.project_name)
         df.loc[i, 'processed_file_name'] = save_path
