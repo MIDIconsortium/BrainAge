@@ -90,7 +90,7 @@ def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval
         
         end = time.time()
         lr = optimizer.param_groups[0]['lr']
-        print('Epoch: {}, lr: {:.2E}, train loss: {:.1f}, valid loss: {:.1f}, corr: {:.2f}, best loss {:.1f}, No improvement: {}'.format(epoch,
+        print('Epoch: {}, lr: {:.2E}, train loss: {:.1f}, valid loss: {:.1f}, corr: {:.2f}, best loss {:.1f}, number of epochs without improvement: {}'.format(epoch,
              lr, train_loss, val_loss, corr, best_loss, num_bad_epochs))
 
     return None
