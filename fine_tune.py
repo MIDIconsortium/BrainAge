@@ -211,8 +211,6 @@ if __name__ == "__main__":
     train_loader, valid_loader, test_loader = get_train_valid_loader(df,
                            batch_size=args.batch_size,
                            random_seed=args.seed,
-                           valid_size=args.valid_size,
-                           test_size = args.test_size,
                            aug=args.aug)
                          
     model_save_path = save_dir + datetime.datetime.now().strftime('{}_%d-%m-%y-%H_%M.pt'.format(args.sequence))
