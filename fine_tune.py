@@ -144,7 +144,6 @@ class dataset(Dataset):
 def get_train_valid_loader(csv_file,
                            batch_size=4,
                            random_seed=10,
-                           valid_size=0.1,
                            aug='none'):
     if aug == 'none':
         train_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
@@ -159,11 +158,16 @@ def get_train_valid_loader(csv_file,
     train_dataset = dataset(csv_file, transform=train_transforms)   
     valid_dataset = dataset(csv_file, transform=valid_transforms)
     test_dataset = dataset(csv_file, transform=test_transforms)
+                         
+    df = pd..read_csv(
+    IDs = df['ID'].unique().tolist()
     
-    ids = np.arange(len(train_dataset))
+    train_ids, test_ids = train_test_split(IDs, test_size=0.2, random_state=random_seed)
+    train_ids, valid_ids = train_test_split(train_ids, test_size=0.2, random_state=random_seed)
     
-    train_idx, test_idx = train_test_split(ids, test_size=0.2, random_state=random_seed)
-    train_idx, valid_idx = train_test_split(train_idx, test_size=0.1, random_state=random_seed)
+    train_idx = df[df['ID'].isin(train_ids)].index.tolist()
+    valid_idx = df[df['ID'].isin(valid_ids)].index.tolist()
+    test_idx = df[df['ID'].isin(test_ids)].index.tolist()
            
     train_sampler = SubsetRandomSampler(train_idx)
     valid_sampler = SubsetRandomSampler(valid_idx)
@@ -185,23 +189,13 @@ if __name__ == "__main__":
     parser.add_argument('--skull_strip', dest='skull_strip', action='store_true')
     parser.set_defaults(skull_strip=False)
     parser.add_argument('--aug', type=str, default='flip')
-    parser.add_argument('--valid_size', type=float, default=0.1)
-    parser.add_argument('--test_size', type=float, default=0.2)
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--batch_size', type=int, default=12)
     parser.add_argument('--csv_file', type=str, required=True)
     parser.add_argument('--project_name', type=str, required=True)
     args = parser.parse_args()
    
-    if args.sequence == 't2':
-        if args.skull_strip:
-            net.load_state_dict(torch.load('./strip_T2.pt'))
-        else:
-            net.load_state_dict(torch.load('./raw_T2.pt'))
-    elif args.sequence == 't1':
-        net.load_state_dict(torch.load('./stripped_T1.pt'))
-    else:
-        raise ValueError('MRI sequence {} not currently handled'.format(args.sequence))
+
     if args.gpu:
         device = torch.device('cuda')
     else:
@@ -216,24 +210,44 @@ if __name__ == "__main__":
                            test_size = args.test_size,
                            aug=args.aug)
                          
-    model_save_path = save_dir + datetime.datetime.now().strftime('%d-%m-%y-%H_%M.pt')
+    model_save_path = save_dir + datetime.datetime.now().strftime('{}_%d-%m-%y-%H_%M.pt'.format(args.sequence))
 
+     
+    if args.sequence == 't2':
+        if args.skull_strip:
+            state_dict = convert_state_dict('./Models/T2/Skull_stripped/seed_42.pt')
+            net = DenseNet(3,1,1)
+            net.load_state_dict(state_dict)
+            net = net.to(device)
+        else:
+            state_dict = convert_state_dict('./Models/T2/Raw/seed_42.pt')
+            net = DenseNet(3,1,1)
+            net.load_state_dict(state_dict)
+            net = net.to(device)
+    elif args.sequence == 't1':
+        if args.skull_strip:
+            state_dict = convert_state_dict('./Models/T1/Skull_stripped/seed_60.pt')
+            net = DenseNet(3,1,1)
+            net.load_state_dict(state_dict)
+            net = net.to(device)
+        else:
+            raise ValueError('Raw T1 model not currently handled. Please specify --skull_strip if skull-stripped and registered (MNI152) T1 model is desired')
+    else:
+        raise ValueError('{} MRI sequence not currently handled (must be one of t2 or t1; DWI and FLAIR coming soon!)'.format(args.sequence))    
+        
     params =  net.parameters() 
-    optimizer = optim.Adam(net.parameters(), lr=1e-4)
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=4)
+    optimizer = optim.Adam(net.parameters(), lr=5e-5)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
     criterion = nn.L1Loss()
     eval_criterion = nn.L1Loss(reduction='sum')
-    out = train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs=60, patience=10)
-
+    out = train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs=60, patience=12)
 
     best_state_dict = torch.load(model_save_path)
     net.load_state_dict(best_state_dict)
 
 
     loss, corr, true_ages, pred_ages = evaluate(net, test_loader, eval_criterion)
-
-
 
     fig = plt.figure(figsize=(8,8))
     ax = fig.add_subplot(111)
