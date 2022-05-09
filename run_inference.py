@@ -125,7 +125,7 @@ if __name__ == "__main__":
                     for Net in net:
                         temp_preds.append(np.round(Net(tensor).detach().cpu().item(), 1))
                     brain_predicted_ages.append(np.mean(temp_preds))
-                 else:
+                else:
                      brain_predicted_ages.append(np.round(net(tensor).detach().cpu().item(), 1))
             else:
                 if args.pred_correction and not args.skull_strip:              
