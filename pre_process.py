@@ -157,36 +157,37 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
     if skull_strip:
         if not os.path.exists('./{}/temp_data'.format(project_name)):
             os.makedirs('./{}/temp_data'.format(project_name))
-                
+        reoriented_path = './{}/temp_data/reorient.nii.gz'.format(project_name)
+        stripped_path = './{}/temp_data/stripped.nii.gz'.format(project_name)
         new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
-        nib.save(new_image, './{}/temp_data/reorient.nii.gz'.format(project_name))
+        nib.save(new_image, reoriented_path)
         if use_gpu:
-            cmd = 'hd-bet -i {} -o {} -mode fast'.format('./{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))
+            cmd = 'hd-bet -i {} -o {} -mode fast'.format(reoriented_path, stripped_path)
         else:
-            cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format('./{}/temp_data/reorient.nii.gz'.format(project_name), './{}/temp_data/stripped.nii.gz'.format(project_name))       
+            cmd = 'hd-bet -i {} -o {} -mode fast -device cpu'.format(reoriented_path, stripped_path)       
         os.system(cmd)
-        if not os.path.exists('./{}/temp_data/stripped.nii.gz'.format(project_name)):
-            print('skull-stripping failed - skipping this image ({})'.format(input_path))
+        if not os.path.exists(stripped_path):
+            print('skull-stripping failed - skipping this image: {}'.format(input_path))
             return None
     
         if register:
-            fixed = ants.image_read('./MNI152_T1_1mm_brain.nii')
-            nii = nib.load('./MNI152_T1_1mm_brain.nii')
-            fixed_arr, fixed_affine = np.asarray(nii.dataobj), nii.affine
-            moving = ants.n4_bias_field_correction(ants.image_read('./{}/temp_data/stripped.nii.gz'.format(project_name)))
-            #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+            fixed = ants.image_read('./Data/MNI152_T1_1mm_brain.nii')
+            fixed_nii = nib.load('./Data/MNI152_T1_1mm_brain.nii')
+            fixed_arr, fixed_affine = np.asarray(fixed_nii.dataobj), fixed_nii.affine
+            moving = ants.n4_bias_field_correction(ants.image_read(stripped_path))
             mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
             arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
             resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
-            os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
         else:
-            nii = nib.load('./{}/temp_data/stripped.nii.gz'.format(project_name))
-            #os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
+            nii = nib.load(stripped_path)
             arr, affine = np.asarray(nii.dataobj), nii.affine
             arr = AddChannel()(arr)
-            resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
-            os.remove('./{}/temp_data/stripped.nii.gz'.format(project_name))
-            
+            resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]  
+        try:
+            os.remove(reoriented_path)
+            os.remove(stripped_path)
+        except Exception as e:
+            print(e)
     else:
         reoriented_arr = AddChannel()(reoriented_arr)
         resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
@@ -213,7 +214,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         if z1 < c1:
             c1 = z1
     if c < 0 or c1 < 0:
-        print('Cropping failed - skipping this image ({})'.format(input_path))
+        print('Cropping failed - skipping this image: {}'.format(input_path))
         return None
     temp_arr = resampled_arr[:,:,:,np.maximum(resampled_arr.shape[-1]-c1-pad_size,c):-c1]
     mask = temp_arr.squeeze()>temp_arr.squeeze().std()
@@ -249,7 +250,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         new_image = nib.Nifti1Image(processed_arr, np.eye(4))
         nib.save(new_image, save_dir)
         
-    
+
     if return_raw:
         return orig_arr, processed_arr
     else:  
