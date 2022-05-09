@@ -202,7 +202,7 @@ if __name__ == "__main__":
     parser.set_defaults(skull_strip=False)
     parser.add_argument('--aug', type=str, default='flip')
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--batch_size', type=int, default=12)
+    parser.add_argument('--batch_size', type=int, default=10)
     parser.add_argument('--csv_file', type=str, required=True)
     parser.add_argument('--project_name', type=str, required=True)
     parser.add_argument('--sequence', type=str, default='t2')    
