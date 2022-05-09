@@ -109,9 +109,9 @@ def evaluate(net, data_loader, eval_criterion):
           age = age.reshape(-1,1)
 
           pred_age = net(im)
-          for pred, age in zip(pred_age, age):
+          for pred, chron_age in zip(pred_age, age):
               pred_ages.append(pred.item())
-              true_ages.append(age.item())
+              true_ages.append(chron_age.item())
 
           val_running_loss += eval_criterion(pred_age, age).sum().detach().item()
           valid_count += im.shape[0]
