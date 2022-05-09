@@ -13,6 +13,7 @@ import nibabel as nib
 import tqdm
 import datetime
 from collections import OrderedDict
+import time
 
 def convert_state_dict(input_path):
     #function to remove the keywork 'module' from pytorch state_dict (which occurs when model is trained using nn.DataParallel)
