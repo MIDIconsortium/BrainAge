@@ -59,7 +59,7 @@ def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval
         train_count = 0
         if num_bad_epochs >= patience:
             return None
-        for i, data in enumerate(tqdm(train_loader)):
+        for i, data in enumerate(tqdm.tqdm(train_loader)):
             im, age = data
             im = im.to(device=device, dtype = torch.float)
             age = age.to(device=device, dtype=torch.float)
@@ -102,7 +102,7 @@ def evaluate(net, data_loader, eval_criterion):
   pred_ages = []
   with torch.no_grad():
       net.eval()
-      for k, data in enumerate(data_loader):
+      for k, data in enumerate(tqdm.tqdm(data_loader)):
           im, age = data
           im = t2.to(device=device, dtype = torch.float)
           age = age.to(device=device, dtype=torch.float)
