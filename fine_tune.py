@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 import re
 import argparse
 import os
-import preprocess
-import t2_skull_strip_and_preprocess
-import t1_skull_strip_register_and_preprocess
+import pre_process
 from monai.networks.nets import DenseNet  
 import torch
 import nibabel as nib
@@ -20,7 +18,6 @@ from sklearn.model_selection import train_test_split
 from monai.networks.nets import DenseNet  
 
 from torch.utils.data import Dataset, DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data.sampler import SubsetRandomSampler
 
 from monai.transforms import (
@@ -110,26 +107,19 @@ def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval
         return val_loss, corr, true_ages, pred_ages
     
 def process(csv_file, project_name, sequence, skull_strip=False):
-    save_dir = './{}'.format(project_name)
+    save_dir = './{}/'.format(project_name)
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     else:
-        raise ValueError('Project name ({}) already used'.format(project_name) 
+        raise ValueError('Project name {} already used'.format(project_name) 
     df = pd.read_csv(csv_file)
     df['processed_file_name'] = -1
     for i, row in df.iterrows():
         file_path = row['file_name']
         ID = row['ID']
-        if args.sequence == 't2':
-            if args.skull_strip:
-                _ = t2_skull_strip_and_preprocess.preprocess(file_name, use_gpu=args.gpu, save_path=os.path.join(save_dir, ID + '.nii.gz'))
-            else:
-                _ = preprocess.preprocess(file_name, save_path=os.path.join(save_dir, ID + '.nii.gz'))
-        elif args.sequence == 't1' and args.skull_strip:
-            _ = t1_skull_strip_register_and_preprocess.preprocess(file_name, use_gpu=args.gpu, save_path=os.path.join(save_dir, ID + '.nii.gz'))
-        else:
-            raise ValueError('MRI sequence {} not currently handled'.format(args.sequence + (' (skull_strip: args.skull_strip)')))
-        df.loc[i, 'processed_file_name'] = os.path.join(save_dir, ID + '.nii.gz')
+        save_path = os.path.join(save_dir, ID + '.nii.gz')
+        _ = pre_process.preprocess(input_path=file_name, save_path = save_path, use_gpu=args.gpu, skull_strip=args.skull_strip, register=args.sequence=='t1', project_name=args.project_name)
+        df.loc[i, 'processed_file_name'] = save_path
     return df
 
 
