@@ -200,7 +200,7 @@ if __name__ == "__main__":
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     else:
-        raise ValueError('Project name {} already used'.format(project_name)) 
+        raise ValueError('Project name {} already used'.format(args.project_name)) 
         
     if args.gpu:
         device = torch.device('cuda')
