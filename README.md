@@ -24,7 +24,7 @@ Optionally, users can also provide a third column named 'Age', which gives the c
 
 Brain-age prediction can then be performed using the following command:
 
-`python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE`
+`python run_inference.py --project_name NAME --csv_file /PATH/TO/CSV/FILE`
 
 This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. If a scatter-plot is required, run.py should be called with the additional argument --return_metrics
 
@@ -32,28 +32,12 @@ By default, our model will run on a cpu. If a GPU is available, run.py should be
 
 `python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE --gpu`
 
-By default, run.py assumes axial T2-weighted scans are provided. If instead axial diffusion-weighted scans are provided, then run.py should be called with the additional argument --sequence dwi to use our DWI model:
-
-`python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE --sequence dwi`
-
-Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior). For this reason, run.py automatically reorients scans to this coordinate system.
-
-### Running models with Information eXtraction from Images (IXI) dataset
-To reproduce the results on the open-access IXI dataset, first download (and unzip) the axial T2-weighted scans and associated .csv file [here](https://brain-development.org/ixi-dataset/). Brain-age prediction can then be performed using the following command:
-
-`python run.py --ixi --project_name IXI --csv_file /home/dw19/Downloads/IXI_file.xls --ixi_nii_dir /PATH/TO/IXI/NII/FILES --return_metrics`
-
-This will save a .csv file with brain-predicted ages for each IXI participant, along with the following scatter plot:
+By default, run.py assumes raw axial T2-weighted scans are provided. If instead volumetric T1--weighted scans are provided, then run_inference.py should be called with the following additional arguments to use our skull-stripped, T1-weighted ensemble model:
 
 
-<img src="https://user-images.githubusercontent.com/67752614/152117840-580e1afa-477c-46cc-9778-f63b0c4fd961.png" width=35% height=35%>
+`python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE --sequence t1 --skull_strip --ensemble`
 
-Note that /PATH/TO/IXI/NII/FILES must be the path to the extracted files after unzipping 'IXI-T2.tar', and should contain files such as 'IXI002-Guys-0828-T2.nii.gz','IXI012-HH-1211-T2.nii.gz' etc.
-
-
-# Coming soon
-
-We will be releasing our 'skull-stripped' model which takes as input axial T2-weighted scans which have had non-brain-tissue removed. We will also be releaseing our volumetric T1-weighted models (raw and skull-stripped).
+Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior). For this reason, run_inference.py automatically reorients scans to this coordinate system.
 
 # Citation
 If you found this repository useful, please consider citing our work:
