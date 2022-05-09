@@ -191,7 +191,7 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
     else:
         reoriented_arr = AddChannel()(reoriented_arr)
         resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
-        
+    print(resampled_arr.shape) 
     pad_size = 130
     min_dim = 85
     crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))    
