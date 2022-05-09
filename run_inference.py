@@ -124,7 +124,7 @@ if __name__ == "__main__":
                     temp_preds = []
                     for Net in net:
                         temp_preds.append(np.round(Net(tensor).detach().cpu().item(), 1))
-                    brain_predicted_ages.append(np.mean(temp_preds)
+                    brain_predicted_ages.append(np.mean(temp_preds))
                  else:
                      brain_predicted_ages.append(np.round(net(tensor).detach().cpu().item(), 1))
             else:
