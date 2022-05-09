@@ -20,24 +20,21 @@ Running our models is straightforward. All that is needed is a .csv file with th
 
 - 'file_name' (which gives the absolute path to the Nifti file for each participant).
 
-Optionally, users can also provide a third column named 'Age', which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error (MAE)) and scatter plots). 
-
-Brain-age prediction can then be performed using the following command:
+Brain-age prediction can then be performed using the following basic command:
 
 `python run_inference.py --project_name NAME --csv_file /PATH/TO/CSV/FILE`
 
-This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. If a scatter-plot is required, run.py should be called with the additional argument --return_metrics
+This will save a .csv file within the local cloned repository (./NAME_output.csv) with the brain-predicted ages for each subject. Optionally, users can also provide a third column named 'Age', which gives the chronological age of each participant in years, in order to generate performance metrics (e.g., mean absolute error [MAE] and scatter plots). To do this, simply add the argument --return_metrics to run_inference.py.
 
 By default, our model will run on a cpu. If a GPU is available, run.py should be called with the additional argument --gpu (in this case, run time is <2 seconds per scan):
 
-`python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE --gpu`
-
-By default, run.py assumes raw axial T2-weighted scans are provided. If instead volumetric T1--weighted scans are provided, then run_inference.py should be called with the following additional arguments to use our skull-stripped, T1-weighted ensemble model:
-
-
-`python run.py --project_name NAME --csv_file /PATH/TO/CSV/FILE --sequence t1 --skull_strip --ensemble`
+By default, run.py assumes raw axial T2-weighted scans are provided. If instead volumetric T1--weighted scans are provided, then run_inference.py should be called with the following additional arguments:
+--sequence t1
+--ensemble 
 
 Please note that our model only provides meaningful brian-age predictions for scans that are oriented in the 'LPS' coordinate system (i.e., right to **L**eft, anterior to **P**osterior, inferior to **S**uperior). For this reason, run_inference.py automatically reorients scans to this coordinate system.
+
+
 
 # Citation
 If you found this repository useful, please consider citing our work:
