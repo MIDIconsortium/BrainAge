@@ -226,18 +226,18 @@ if __name__ == "__main__":
             os.mkdir(nii_dir)
         else:
             raise ValueError('Project name {} already used'.format(args.project_name)) 
+            
+        _ = process(args.csv_file, args.project_name, args.sequence, save_dir, args.skull_strip)                     
+                                            
+        train_loader, valid_loader, test_loader = get_train_valid_loader(save_dir + 'fine_tuning_dataset.csv',
+                           batch_size=args.batch_size,
+                           random_seed=args.seed,
+                           aug=args.aug)
         
     if args.gpu:
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
-    
-    df = process(args.csv_file, args.project_name, args.sequence, save_dir, args.skull_strip)                     
-                                            
-    train_loader, valid_loader, test_loader = get_train_valid_loader(save_dir + 'fine_tuning_dataset.csv',
-                           batch_size=args.batch_size,
-                           random_seed=args.seed,
-                           aug=args.aug)
                         
     model_save_path = save_dir + datetime.datetime.now().strftime('{}_%d-%m-%y-%H_%M.pt'.format(args.sequence))
 
