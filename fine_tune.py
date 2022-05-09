@@ -104,14 +104,14 @@ def evaluate(net, data_loader, eval_criterion):
       net.eval()
       for k, data in enumerate(tqdm.tqdm(data_loader)):
           im, age = data
-          im = t2.to(device=device, dtype = torch.float)
+          im = im.to(device=device, dtype = torch.float)
           age = age.to(device=device, dtype=torch.float)
           age = age.reshape(-1,1)
 
           pred_age = net(im)
-          for pred, true, acc in zip(pred_age, age, accs):
+          for pred, age in zip(pred_age, age):
               pred_ages.append(pred.item())
-              true_ages.append(true.item())
+              true_ages.append(age.item())
 
           val_running_loss += eval_criterion(pred_age, age).sum().detach().item()
           valid_count += im.shape[0]
