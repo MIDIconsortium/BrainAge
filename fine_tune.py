@@ -193,11 +193,14 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=12)
     parser.add_argument('--csv_file', type=str, required=True)
     parser.add_argument('--project_name', type=str, required=True)
+    parser.add_argument('--sequence', type=str, default='t2')    
+        
+        
     args = parser.parse_args()
    
 
     if args.gpu:
-        device = torch.device('cuda')
+        device = torch.device('cuda:1')
     else:
         device = torch.device('cpu')
     
