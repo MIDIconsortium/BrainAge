@@ -195,14 +195,14 @@ if __name__ == "__main__":
         
     args = parser.parse_args()
     
-    save_dir = './{}/'.format(project_name)
+    save_dir = './{}/'.format(args.project_name)
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     else:
         raise ValueError('Project name {} already used'.format(project_name)) 
         
     if args.gpu:
-        device = torch.device('cuda:1')
+        device = torch.device('cuda')
     else:
         device = torch.device('cpu')
     
