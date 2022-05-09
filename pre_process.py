@@ -145,20 +145,16 @@ def reorder_voxels(vox_array, affine, voxel_order):
 
     return (vox_array, affine, aff_trans, ornt_trans)
 
-def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None, return_raw=False):
-    
-    orig_nii = nib.load(input_path)
-    orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
-    if get_dims(orig_arr.shape) != (3, 1):
-        print('The raw nifti image should be 3 dimensional, instead had shape {} - skipping this image ({})'.format(orig_arr.shape, input_path))
-        return None
-    reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
-    
+def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, register=False, project_name=None, return_raw=False):    
     if skull_strip:
         if not os.path.exists('./{}/temp_data'.format(project_name)):
             os.makedirs('./{}/temp_data'.format(project_name))
         reoriented_path = './{}/temp_data/reorient.nii.gz'.format(project_name)
         stripped_path = './{}/temp_data/stripped.nii.gz'.format(project_name)
+        
+        orig_nii = nib.load(input_path)
+        orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
+        reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
         new_image = nib.Nifti1Image(reoriented_arr, reoriented_affine)
         nib.save(new_image, reoriented_path)
         if use_gpu:
@@ -169,29 +165,26 @@ def preprocess(input_path, use_gpu=False, save_dir=None, skull_strip=False, regi
         if not os.path.exists(stripped_path):
             print('skull-stripping failed - skipping this image: {}'.format(input_path))
             return None
-    
-        if register:
+        if not register:
+            input_path = stripped_path
+        else:
+            registered_path = './{}/temp_data/registered.nii.gz'.format(project_name)
             fixed = ants.image_read('./Data/MNI152_T1_1mm_brain.nii')
             fixed_nii = nib.load('./Data/MNI152_T1_1mm_brain.nii')
             fixed_arr, fixed_affine = np.asarray(fixed_nii.dataobj), fixed_nii.affine
             moving = ants.n4_bias_field_correction(ants.image_read(stripped_path))
             mytx = ants.registration(fixed=fixed, moving=moving, type_of_transform='AffineFast')
-            arr, affine = mytx['warpedmovout'].numpy(), fixed_affine
-            resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]
-        else:
-            nii = nib.load(stripped_path)
-            arr, affine = np.asarray(nii.dataobj), nii.affine
-            arr = AddChannel()(arr)
-            resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(arr, affine)[0]  
-        try:
-            os.remove(reoriented_path)
-            os.remove(stripped_path)
-        except Exception as e:
-            print(e)
-    else:
-        reoriented_arr = AddChannel()(reoriented_arr)
-        resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
-    print(resampled_arr.shape) 
+            im = mytx['warpedmovout'].numpy()
+            new_image = nib.Nifti1Image(im, fixed_affine)
+            nib.save(new_image, registered_path)
+            input_path = registered_path
+            
+    orig_nii = nib.load(input_path)
+    orig_arr, orig_affine = np.asarray(orig_nii.dataobj), orig_nii.affine
+    reoriented_arr, reoriented_affine, *_ = reorder_voxels(orig_arr, orig_affine, 'RAS')
+    reoriented_arr = AddChannel()(reoriented_arr)
+    resampled_arr =  Spacing(pixdim=(1.4, 1.4, 1.4), mode='bilinear')(reoriented_arr, reoriented_affine)[0]
+
     pad_size = 130
     min_dim = 85
     crop_pad = ResizeWithPadOrCrop(spatial_size=(pad_size,pad_size, pad_size))    
