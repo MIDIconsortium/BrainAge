@@ -107,7 +107,7 @@ def evaluate(net, data_loader, eval_criterion):
 
       return val_loss, corr, true_ages, pred_ages
     
-def process(csv_file, project_name, sequence, skull_strip=False):
+def process(csv_file, project_name, sequence, save_dir, skull_strip=False):
     df = pd.read_csv(csv_file)
     df['processed_file_name'] = -1
     print('***PRE-PROCESSING RAW NIFTI FILES***')
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     else:
         device = torch.device('cpu')
     
-    df = process(args.csv_file, args.project_name, args.sequence, args.skull_strip)                     
+    df = process(args.csv_file, args.project_name, args.sequence, save_dir, args.skull_strip)                     
                                             
     train_loader, valid_loader, test_loader = get_train_valid_loader(df,
                            batch_size=args.batch_size,
