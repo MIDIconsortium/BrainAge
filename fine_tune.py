@@ -36,6 +36,7 @@ from monai.transforms import (
 def train(net, optimizer, scheduler, train_loader, valid_loader, criterion, eval_criterion, save_path, epochs = 30, patience = 5):
     best_loss = 1e9
     num_bad_epochs = 0
+    print('**BEGINNING TRAINING***')
     for epoch in range(epochs):
         start = time.time()
         train_loss = 0  
@@ -114,7 +115,8 @@ def process(csv_file, project_name, sequence, skull_strip=False):
         raise ValueError('Project name {} already used'.format(project_name))
     df = pd.read_csv(csv_file)
     df['processed_file_name'] = -1
-    for i, row in df.iterrows():
+    print('***PRE-PROCESSING RAW NIFTI FILES***')
+    for i, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
         file_path = row['file_name']
         ID = str(row['ID'])
         save_path = os.path.join(save_dir, ID + '.nii.gz')
