@@ -129,17 +129,18 @@ def process(csv_file, project_name, sequence, save_dir, skull_strip=False):
     for i, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
         file_path = row['file_name']
         ID = str(row['ID'])
-        save_path = os.path.join(save_dir, ID + '.nii.gz')
+        save_path = os.path.join(save_dir + 'processed_nii', ID + '.nii.gz')
         _ = pre_process.preprocess(input_path=file_path, save_path = save_path, use_gpu=args.gpu, skull_strip=args.skull_strip, register=args.sequence=='t1', project_name=args.project_name)
         df.loc[i, 'processed_file_name'] = save_path
-    return df
+        df.to_csv(save_dir + 'fine_tuning_dataset.csv', index=False)
+    return None
 
 
 class dataset(Dataset):
     """Brain-age fine-tuning dataset"""
 
-    def __init__(self, df, transform = None):
-        self.file_frame = df
+    def __init__(self, csv_file, transform = None):
+        self.file_frame = pd.read_csv(csv_file)
         self.transform = transform
         
     def __len__(self):
@@ -153,7 +154,7 @@ class dataset(Dataset):
         age = self.file_frame.iloc[idx]['Age']   
         return tensor, age
     
-def get_train_valid_loader(df,
+def get_train_valid_loader(csv_file,
                            batch_size=4,
                            random_seed=10,
                            aug='none'):
@@ -167,11 +168,11 @@ def get_train_valid_loader(df,
     valid_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
     test_transforms = Compose([LoadNifti(image_only=True), ToTensor()])
    
-    train_dataset = dataset(df, transform=train_transforms)   
-    valid_dataset = dataset(df, transform=valid_transforms)
-    test_dataset = dataset(df, transform=test_transforms)
+    train_dataset = dataset(csv_file, transform=train_transforms)   
+    valid_dataset = dataset(csv_file, transform=valid_transforms)
+    test_dataset = dataset(csv_file, transform=test_transforms)
                          
-
+    df = pd.read_csv(csv_file)
     IDs = df['ID'].unique().tolist()
     
     train_ids, test_ids = train_test_split(IDs, test_size=0.2, random_state=random_seed)
@@ -200,6 +201,8 @@ if __name__ == "__main__":
     parser.set_defaults(gpu=False)
     parser.add_argument('--skull_strip', dest='skull_strip', action='store_true')
     parser.set_defaults(skull_strip=False)
+    parser.add_argument('--already_processed', dest='already_processed', action='store_true')
+    parser.set_defaults(already_processed=False)
     parser.add_argument('--aug', type=str, default='flip')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--batch_size', type=int, default=10)
@@ -209,10 +212,18 @@ if __name__ == "__main__":
         
         
     args = parser.parse_args()
-    
     save_dir = './{}/'.format(args.project_name)
+    if args.already_processed:
+        assert os.path.exists(save_dir + 'fine_tuning_dataset.csv'), ''' Couldn't find csv file for processed nii files at {}/fine_tuning_dataset.csv'''.format(save_dir)
+        train_loader, valid_loader, test_loader = get_train_valid_loader(save_dir + 'fine_tuning_dataset.csv',
+                           batch_size=args.batch_size,
+                           random_seed=args.seed,
+                           aug=args.aug)
+    else:
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
+        nii_dir = save_dir + 'processed_nii'
+        os.mkdir(nii_dir)
     else:
         raise ValueError('Project name {} already used'.format(args.project_name)) 
         
@@ -270,7 +281,7 @@ if __name__ == "__main__":
     ax = fig.add_subplot(111)
     ax.scatter(true_ages, pred_ages, alpha=0.3)
     ax.plot(true_ages, true_ages,linestyle= '--', color='black')
-    ax.set_ylim([min(true_ages), max(true_ages)])
+    #ax.set_ylim([min(true_ages), max(true_ages)])
     ax.set_aspect('equal')
     ax.set_xlabel('Chronological age')
     ax.set_ylabel('Predicted age')
