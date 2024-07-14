@@ -52,7 +52,8 @@ Please note that our model only provides meaningful brian-age predictions for sc
 # Citation
 If you found this repository useful, please consider citing our work:
 
+Wood, D. A., Townend, M., Guilhem, E., Kafiabadi, S., Hammam, A., Wei, Y., ... & Booth, T. C. (2024). Optimising brain age estimation through transfer learning: A suite of pre‐trained foundation models for improved performance and generalisability in a clinical setting. Human Brain Mapping, 45(4), e26625.
+
 Wood, D. A., Kafiabadi, S., Al Busaidi, A., Guilhem, E., Montvila, A., Lynch, J., ... & Booth, T. C. (2022). Accurate brain-age models for routine clinical MRI examinations. NeuroImage, 118871. https://doi.org/10.1016/j.neuroimage.2022.118871
 
-# Coming soon
-We have recentely had a follow-up paper [Optimising brain age estimation through transfer learning: A suite of pre-trained foundation models for improved performance and generalisability in a clinical setting](https://onlinelibrary.wiley.com/doi/10.1002/hbm.26625) published in Human Brain Mapping. The code to run and fine-tune these foundation models will be added shortly!
+
