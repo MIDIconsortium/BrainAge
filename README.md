@@ -1,6 +1,6 @@
 # Accurate brain-age models for routine clinical MRI examinations
 
-This repository contains scripts to enable readers to run the trained models presented in Wood et al., [Accurate brain-age models for routine clinical MRI examinations](https://www.sciencedirect.com/science/article/pii/S1053811922000015?via%3Dihub#fig0003), 2022, NeuroImage. The models were trained on > 23,000 axial T2-weighted head MRI scans from two large UK hospitals, and demonstrate accurate, generalisable brain-age prediction:
+This repository contains scripts to enable readers to run the trained models presented in Wood et al., [Accurate brain-age models for routine clinical MRI examinations](https://www.sciencedirect.com/science/article/pii/S1053811922000015?via%3Dihub#fig0003), 2022, NeuroImage and in Wood et al., [Optimising brain age estimation through transfer learning: a suite of pre-trained foundation models for improved performance and generalisability in a clinical setting](https://onlinelibrary.wiley.com/doi/10.1002/hbm.26625), 2024, Human Brain Mapping. The models were trained on > 23,000 axial T2-weighted head MRI scans from two large UK hospitals, and demonstrate accurate, generalisable brain-age prediction:
 
 <img src="https://user-images.githubusercontent.com/67752614/152115266-02e2c8ff-2994-4115-a0bf-75d6cf576f7f.png" width=60% height=60%>
 
