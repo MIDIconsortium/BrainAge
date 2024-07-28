@@ -8,7 +8,7 @@ This repository contains scripts to enable readers to run the trained models pre
 
 # Requirements
 
-The code requires the data to be in Nifti file format (.nii or .nii.gz extension) and makes use of the [Project Monai library](https://monai.io/). This repository is compatible with python 3.6. See requirements.txt for all prerequisites; you can also install them using the following command:
+The code requires the data to be in Nifti file format (.nii or .nii.gz extension) and makes use of the [Project Monai library](https://monai.io/). This repository is compatible with python 3.8. See requirements.txt for all prerequisites; you can also install them using the following command:
 
 `pip install -r requirements.txt`
 
